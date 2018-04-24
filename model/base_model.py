@@ -78,11 +78,13 @@ class BaseModel(object):
         self.saver.restore(self.sess, dir_model)
 
 
-    def save_session(self):
+    def save_session(self, directory=None):
+        if directory == None:
+            directory = self.config.dir_model
         """Saves session = weights"""
-        if not os.path.exists(self.config.dir_model):
-            os.makedirs(self.config.dir_model)
-        self.saver.save(self.sess, self.config.dir_model)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        self.saver.save(self.sess, directory)
 
 
     def close_session(self):
@@ -98,11 +100,11 @@ class BaseModel(object):
 
         """
         self.merged      = tf.summary.merge_all()
-        self.file_writer = tf.summary.FileWriter(self.config.dir_output,
+        self.file_writer = tf.summary.FileWriter(self.config.dir_model_output,
                 self.sess.graph)
 
 
-    def train(self, train, dev):
+    def train(self, train, dev,output_dir= None):
         """Performs training with early stopping and lr exponential decay
 
         Args:
@@ -110,6 +112,8 @@ class BaseModel(object):
             dev: dataset
 
         """
+        if output_dir == None:
+            output_dir = self.config.dir_model
         best_score = 0
         nepoch_no_imprv = 0 # for early stopping
         self.add_summary() # tensorboard
@@ -124,7 +128,7 @@ class BaseModel(object):
             # early stopping and saving best parameters
             if score >= best_score:
                 nepoch_no_imprv = 0
-                self.save_session()
+                self.save_session(output_dir)
                 best_score = score
                 self.logger.info("- new best score!")
             else:
@@ -133,6 +137,7 @@ class BaseModel(object):
                     self.logger.info("- early stopping {} epochs without "\
                             "improvement".format(nepoch_no_imprv))
                     break
+                
 
 
     def evaluate(self, test):

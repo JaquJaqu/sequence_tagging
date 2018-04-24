@@ -1,3 +1,5 @@
+import os
+import sys
 from model.config import Config
 from model.data_utils import CoNLLDataset, get_vocabs, UNK, NUM, \
     get_glove_vocab, write_vocab, load_vocab, get_char_vocab, \
@@ -20,30 +22,46 @@ def main():
 
     """
     # get config and processing of words
-    config = Config(load=False)
-    processing_word = get_processing_word(lowercase=True)
+    config_file = sys.argv[1]
+    
+    config = Config(config_file,load=False)
+    processing_word = get_processing_word(lowercase=config.lowercase)
 
     # Generators
     dev   = CoNLLDataset(config.filename_dev, processing_word)
     test  = CoNLLDataset(config.filename_test, processing_word)
     train = CoNLLDataset(config.filename_train, processing_word)
+    
 
     # Build Word and Tag vocab
     vocab_words, vocab_tags = get_vocabs([train, dev, test])
-    vocab_glove = get_glove_vocab(config.filename_glove)
-
-    vocab = vocab_words & vocab_glove
+    #add additional tags/vocabulary where the data is applied to!
+    if len(sys.argv)>2:
+        for i in range(2,len(sys.argv)):
+            wo,tg = get_vocabs([CoNLLDataset(sys.argv[i],processing_word)])
+            vocab_words = vocab_words & wo
+            vocab_tags = vocab_tags & tg
+    print(type(vocab_words))
+    print(len(vocab_words))
+    #if config.use_pretrained:
+    #    vocab_glove = get_glove_vocab(config.filename_glove)
+    #if config.use_pretrained:
+    #    vocab = vocab_words & vocab_glove
+    #else:
+    vocab = vocab_words
     vocab.add(UNK)
     vocab.add(NUM)
-
+    print(len(vocab))
+    print(type(vocab))
     # Save vocab
     write_vocab(vocab, config.filename_words)
     write_vocab(vocab_tags, config.filename_tags)
-
+    
     # Trim GloVe Vectors
     vocab = load_vocab(config.filename_words)
-    export_trimmed_glove_vectors(vocab, config.filename_glove,
-                                config.filename_trimmed, config.dim_word)
+    if config.use_pretrained:
+        export_trimmed_glove_vectors(vocab, config.filename_glove,
+                                config.filename_trimmed, config.dim_word, config.embedding_type)
 
     # Build and save char vocab
     train = CoNLLDataset(config.filename_train)

@@ -1,11 +1,12 @@
 from model.data_utils import CoNLLDataset
 from model.ner_model import NERModel
 from model.config import Config
-
+import sys
 
 def main():
     # create instance of config
-    config = Config()
+    config_file = sys.argv[1]
+    config = Config(config_file)
 
     # build model
     model = NERModel(config)
@@ -18,7 +19,6 @@ def main():
                          config.processing_tag, config.max_iter)
     train = CoNLLDataset(config.filename_train, config.processing_word,
                          config.processing_tag, config.max_iter)
-
     # train model
     model.train(train, dev)
 

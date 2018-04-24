@@ -1,11 +1,12 @@
 import numpy as np
 import os
-
+import fastText
 
 # shared global variables to be imported from model also
 UNK = "$UNK$"
 NUM = "$NUM$"
 NONE = "O"
+
 
 
 # special error message
@@ -21,7 +22,27 @@ trimm your word vectors.
 """.format(filename)
         super(MyIOError, self).__init__(message)
 
-
+class Embeddings(object):
+    def __init__(self):
+        k = 13
+    def getEmbeddingVector(self):
+        return None
+    def load(self,filename):
+        return None
+    def save(self,outputfile):
+        return None
+    
+class Word(object):
+    def __init__(self,word,processed_word, identifier, unknown=False):
+        self.word = word
+        self.processed_word  = processed_word
+        self.identifier=identifier
+        self.unknown = unknown
+    def __str__(self):
+        return self.processed_word
+    def __repr__(self):
+        return self.identifier
+    
 class CoNLLDataset(object):
     """Class that iterates over CoNLL Dataset
 
@@ -68,19 +89,24 @@ class CoNLLDataset(object):
                         niter += 1
                         if self.max_iter is not None and niter > self.max_iter:
                             break
+                        #print(words)
                         yield words, tags
                         words, tags = [], []
                 else:
-                    ls = line.split(' ')
+                    ls = line.split()
+                    
                     word, tag = ls[0],ls[-1]
+                    #print(tag+"\t"+word)
                     if self.processing_word is not None:
                         word = self.processing_word(word)
                     if self.processing_tag is not None:
                         tag = self.processing_tag(tag)
                     words += [word]
                     tags += [tag]
-
-
+                    #print(str(tag)+"\t"+str(word))
+                    #print ("--------------")
+            if len(words)>0:
+                yield words,tags
     def __len__(self):
         """Iterates once over the corpus to set and store length"""
         if self.length is None:
@@ -106,7 +132,10 @@ def get_vocabs(datasets):
     vocab_tags = set()
     for dataset in datasets:
         for words, tags in dataset:
-            vocab_words.update(words)
+           
+            for w in words:
+                vocab_words.add(str(w))
+            #vocab_words.update(word_str)
             vocab_tags.update(tags)
     print("- done. {} tokens".format(len(vocab_words)))
     return vocab_words, vocab_tags
@@ -166,9 +195,9 @@ def write_vocab(vocab, filename):
     with open(filename, "w") as f:
         for i, word in enumerate(vocab):
             if i != len(vocab) - 1:
-                f.write("{}\n".format(word))
+                f.write("{}\n".format(str(word)))
             else:
-                f.write(word)
+                f.write(str(word))
     print("- done. {} tokens".format(len(vocab)))
 
 
@@ -184,17 +213,31 @@ def load_vocab(filename):
     """
     try:
         d = dict()
+        idx = 0
         with open(filename) as f:
-            for idx, word in enumerate(f):
+            for word in f:
                 word = word.strip()
-                d[word] = idx
+                if word in d:
+                    continue
+                d[word]=idx
+                idx+=1
+            #for idx, word in enumerate(f):
+            #    word = word.strip()
+            #    d[word] = idx
 
     except IOError:
         raise MyIOError(filename)
     return d
 
+def load_vocab_rev(filename):
+    d = {}
+    with open(filename) as f:
+        for idx, word in enumerate(f):
+            word = word.strip()
+            d[idx] = word
+    return d
 
-def export_trimmed_glove_vectors(vocab, glove_filename, trimmed_filename, dim):
+def export_trimmed_glove_vectors(vocab, glove_filename, trimmed_filename, dim,embedding_type):
     """Saves glove vectors in numpy array
 
     Args:
@@ -202,22 +245,30 @@ def export_trimmed_glove_vectors(vocab, glove_filename, trimmed_filename, dim):
         glove_filename: a path to a glove file
         trimmed_filename: a path where to store a matrix in npy
         dim: (int) dimension of embeddings
-
+        type: type of embeddings: fasttext, glove, w2v
     """
     embeddings = np.zeros([len(vocab), dim])
-    with open(glove_filename) as f:
-        for line in f:
-            line = line.strip().split(' ')
-            word = line[0]
-            embedding = [float(x) for x in line[1:]]
-            if word in vocab:
-                word_idx = vocab[word]
-                embeddings[word_idx] = np.asarray(embedding)
-
+    if embedding_type.lower()=="glove":
+        with open(glove_filename) as f:
+            for line in f:
+                line = line.strip().split(' ')
+                word = line[0]
+                embedding = [float(x) for x in line[1:]]
+                if word in vocab:
+                    word_idx = vocab[word]
+                    embeddings[word_idx] = np.asarray(embedding)
+    elif embedding_type.lower()=="fasttext":
+        model = fastText.load_model(glove_filename)
+        for w in vocab:
+            word_idx = vocab[w]
+            embeddings[word_idx]=model.get_word_vector(w)
+    else:
+        raise Exception("Embedding type not known "+embedding_type)
+    
     np.savez_compressed(trimmed_filename, embeddings=embeddings)
 
 
-def get_trimmed_glove_vectors(filename):
+def get_trimmed_glove_vectors(filename,is_glove=True):
     """
     Args:
         filename: path to the npz file
@@ -227,13 +278,32 @@ def get_trimmed_glove_vectors(filename):
 
     """
     try:
+        if not filename.endswith("npz"):
+            
+            #if not is_glove:
+            #    return np.loadtxt(filename,skiprows=1)
+            return np.loadtxt(filename) 
         with np.load(filename) as data:
             return data["embeddings"]
 
     except IOError:
         raise MyIOError(filename)
 
+def get_same_word(vocab_words=None, vocab_chars=None,
+                    lowercase=False, chars=False, allow_unk=True):
+    def f(word):
+        return word
 
+def get_processing_tag(vocab_words):
+    def f(word):
+        if word in vocab_words:
+            tag_id = vocab_words[word]
+            return tag_id;
+        else:
+            raise Exception("Unknow key is not allowed. Check that "\
+                                "your vocab (tags?) is correct")
+    return f
+        
 def get_processing_word(vocab_words=None, vocab_chars=None,
                     lowercase=False, chars=False, allow_unk=True):
     """Return lambda function that transform a word (string) into list,
@@ -258,27 +328,32 @@ def get_processing_word(vocab_words=None, vocab_chars=None,
                     char_ids += [vocab_chars[char]]
 
         # 1. preprocess word
+        processed_word = word
         if lowercase:
-            word = word.lower()
+            processed_word = word.lower()
         if word.isdigit():
-            word = NUM
-
+            processed_word = NUM
+        
         # 2. get id of word
+        unknown =False
+        word_id = -1
         if vocab_words is not None:
-            if word in vocab_words:
-                word = vocab_words[word]
+            if processed_word in vocab_words:
+                word_id = vocab_words[processed_word]
             else:
+                
                 if allow_unk:
-                    word = vocab_words[UNK]
+                    word_id = vocab_words[UNK]
+                    unknown = True
                 else:
                     raise Exception("Unknow key is not allowed. Check that "\
                                     "your vocab (tags?) is correct")
-
+        w = Word(word, processed_word,word_id,unknown)
         # 3. return tuple char ids, word id
         if vocab_chars is not None and chars == True:
-            return char_ids, word
+            return char_ids, w
         else:
-            return word
+            return w
 
     return f
 
@@ -351,11 +426,11 @@ def minibatches(data, minibatch_size):
     x_batch, y_batch = [], []
     for (x, y) in data:
         if len(x_batch) == minibatch_size:
+            
             yield x_batch, y_batch
             x_batch, y_batch = [], []
-
         if type(x[0]) == tuple:
-            x = zip(*x)
+            x = list(zip(*x))
         x_batch += [x]
         y_batch += [y]
 
@@ -373,7 +448,15 @@ def get_chunk_type(tok, idx_to_tag):
         tuple: "B", "PER"
 
     """
+    #tag_name = idx_to_tag[tok]
+    #print(tok.word)
+    #print(tok.identifier)
+    #print(tok.processed_word)
+    #if type(tok)==np.int32:
+    #    idx_to_tag
     tag_name = idx_to_tag[tok]
+    #else:
+    #    tag_name  =tok.word
     tag_class = tag_name.split('-')[0]
     tag_type = tag_name.split('-')[-1]
     return tag_class, tag_type
@@ -396,11 +479,13 @@ def get_chunks(seq, tags):
 
     """
     default = tags[NONE]
+    #print(tags)
     idx_to_tag = {idx: tag for tag, idx in tags.items()}
     chunks = []
     chunk_type, chunk_start = None, None
     for i, tok in enumerate(seq):
         # End of a chunk 1
+        
         if tok == default and chunk_type is not None:
             # Add a chunk.
             chunk = (chunk_type, chunk_start, i)

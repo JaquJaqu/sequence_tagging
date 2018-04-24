@@ -1,9 +1,10 @@
 import numpy as np
-import os
+import os, sys
 import tensorflow as tf
 
 
 from .data_utils import minibatches, pad_sequences, get_chunks
+from .data_utils import load_vocab_rev
 from .general_utils import Progbar
 from .base_model import BaseModel
 
@@ -15,6 +16,7 @@ class NERModel(BaseModel):
         super(NERModel, self).__init__(config)
         self.idx_to_tag = {idx: tag for tag, idx in
                            self.config.vocab_tags.items()}
+        
 
 
     def add_placeholders(self):
@@ -45,7 +47,25 @@ class NERModel(BaseModel):
         self.lr = tf.placeholder(dtype=tf.float32, shape=[],
                         name="lr")
 
-
+    def extract_identifiers(self,sentences):
+        res = []
+        for sentence in sentences:
+            s = []
+            for word in sentence:
+                s.append(word.identifier)
+            res.append(s)
+        return res
+    
+    def extract_labels(self,sentences):
+        res = []
+        for sentence in sentences:
+            s = []
+            for word in sentence:
+                s.append(word)
+            res.append(s)
+        return res
+    
+    
     def get_feed_dict(self, words, labels=None, lr=None, dropout=None):
         """Given some data, pad it and build a feed dictionary
 
@@ -60,20 +80,38 @@ class NERModel(BaseModel):
             dict {placeholder: value}
 
         """
+        
         # perform padding of the given data
         if self.config.use_chars:
             char_ids, word_ids = zip(*words)
-            word_ids, sequence_lengths = pad_sequences(word_ids, 0)
+            word_ids, sequence_lengths = pad_sequences(word_ids, self.config.pad_token)
             char_ids, word_lengths = pad_sequences(char_ids, pad_tok=0,
                 nlevels=2)
         else:
-            word_ids, sequence_lengths = pad_sequences(words, 0)
-
+            word_ids, sequence_lengths = pad_sequences(words,  self.config.pad_token)
+        word_ids_word = word_ids
+        
+        word_ids = self.extract_identifiers(word_ids_word)
+        
+        
+        labels_word = labels
+            
+        if not labels == None:
+            labels = self.extract_labels(labels_word)
+                
+#        print(type(word_ids))
+#        for w in word_ids:
+#            print(type(w))
+#            for wi in w:    
+#                print("WORD:"+wi.word)
         # build feed dictionary
+        
         feed = {
             self.word_ids: word_ids,
             self.sequence_lengths: sequence_lengths
         }
+        if self.config.use_large_embeddings:
+            feed[self.word_embeddings_values]= self.config.embeddings
 
         if self.config.use_chars:
             feed[self.char_ids] = char_ids
@@ -101,21 +139,56 @@ class NERModel(BaseModel):
         the correct shape is initialized.
         """
         with tf.variable_scope("words"):
+            # Embeddings are trained from scratch
             if self.config.embeddings is None:
                 self.logger.info("WARNING: randomly initializing word vectors")
-                _word_embeddings = tf.get_variable(
+                if self.config.use_large_embeddings ==True and self.config.use_pretrained ==False:
+                    sys.stderr.write("Using large embeddings without pre-trained embeddings is not valid")
+                    sys.exit(0)
+                if self.config.use_large_embeddings==True:
+                    _word_embeddings = tf.placeholder(
+                        name="word_embeddings_values",
+                        dtype=tf.float32,
+                        shape=[self.config.nwords, self.config.dim_word])
+                else:
+                    _word_embeddings = tf.get_variable(
                         name="_word_embeddings",
                         dtype=tf.float32,
                         shape=[self.config.nwords, self.config.dim_word])
+                
+
             else:
-                _word_embeddings = tf.Variable(
+                
+                
+                if self.config.use_large_embeddings==True:
+                    _word_embeddings = tf.placeholder(
+                        name="word_embeddings_values",
+                        dtype=tf.float32, 
+                        shape=(self.config.nwords, self.config.dim_word))
+                else:
+                    _word_embeddings = tf.Variable(
                         self.config.embeddings,
                         name="_word_embeddings",
                         dtype=tf.float32,
                         trainable=self.config.train_embeddings)
-
+                # check if random or OOV embeddings are added
+                if self.config.oov_size>0:
+                    backoff_embeddings_rand = tf.get_variable(
+                                name="backoff_embeddings_rand",
+                                shape=[self.config.oov_size-self.config.oov_current_size, self.config.dim_word],
+                                initializer=tf.random_uniform_initializer(-0.04, 0.04),
+                                trainable=self.config.train_embeddings)
+                    backoff_embeddings_change = tf.get_variable(
+                                name="backoff_embeddings_change",
+                                shape=[self.config.oov_current_size, self.config.dim_word],
+                                initializer=tf.random_uniform_initializer(-0.04, 0.04),
+                                trainable=self.config.embeddings_oov)
+            #self._word_embeddings = _word_embeddings
+            if self.config.use_large_embeddings:
+                self.word_embeddings_values = _word_embeddings
             word_embeddings = tf.nn.embedding_lookup(_word_embeddings,
                     self.word_ids, name="word_embeddings")
+            
 
         with tf.variable_scope("chars"):
             if self.config.use_chars:
@@ -238,6 +311,7 @@ class NERModel(BaseModel):
             sequence_length
 
         """
+        #print(type(words[0][0]))
         fd, sequence_lengths = self.get_feed_dict(words, dropout=1.0)
 
         if self.config.use_crf:
@@ -256,7 +330,7 @@ class NERModel(BaseModel):
             return viterbi_sequences, sequence_lengths
 
         else:
-            labels_pred = self.sess.run(self.labels_pred, feed_dict=fd)
+            labels_pred = sess.run(self.labels_pred, feed_dict=fd)
 
             return labels_pred, sequence_lengths
 
@@ -280,9 +354,9 @@ class NERModel(BaseModel):
 
         # iterate over dataset
         for i, (words, labels) in enumerate(minibatches(train, batch_size)):
+            
             fd, _ = self.get_feed_dict(words, labels, self.config.lr,
                     self.config.dropout)
-
             _, train_loss, summary = self.sess.run(
                     [self.train_op, self.loss, self.merged], feed_dict=fd)
 
@@ -297,9 +371,9 @@ class NERModel(BaseModel):
                 for k, v in metrics.items()])
         self.logger.info(msg)
 
-        return metrics["f1"]
+        return metrics["f1"]                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 
-
+    
     def run_evaluate(self, test):
         """Evaluates performance on test set
 
@@ -316,14 +390,12 @@ class NERModel(BaseModel):
             labels_pred, sequence_lengths = self.predict_batch(words)
 
             for lab, lab_pred, length in zip(labels, labels_pred,
-                                             sequence_lengths):
-                lab      = lab[:length]
+                                             sequence_lengths):                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+                lab      = lab[:length]                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
                 lab_pred = lab_pred[:length]
                 accs    += [a==b for (a, b) in zip(lab, lab_pred)]
-
                 lab_chunks      = set(get_chunks(lab, self.config.vocab_tags))
-                lab_pred_chunks = set(get_chunks(lab_pred,
-                                                 self.config.vocab_tags))
+                lab_pred_chunks = set(get_chunks(lab_pred,self.config.vocab_tags))
 
                 correct_preds += len(lab_chunks & lab_pred_chunks)
                 total_preds   += len(lab_pred_chunks)
@@ -335,7 +407,74 @@ class NERModel(BaseModel):
         acc = np.mean(accs)
 
         return {"acc": 100*acc, "f1": 100*f1}
-
+    
+    def process_test(self,words,words_idx,labels):
+        if len(words)==0:
+            return
+        labels_pred, sequence_lengths = self.predict_batch(words_idx)
+        for lab, lab_predict,word in zip(labels,labels_pred, words):
+            
+            lab = idx2tag[lab[i]]
+        
+    
+    def predict_test(self,test):
+        
+        idx2word = load_vocab_rev(self.config.filename_words)
+        idx2tag  = load_vocab_rev(self.config.filename_tags)
+        
+        #for l in open(test_file):
+            
+        #    ls = l.strip().split()
+        #    w = ls[0]
+        #    l = ls[1]
+                
+         
+        for words, labels in minibatches(test, self.config.batch_size):
+            labels_pred, sequence_lengths = self.predict_batch(words)
+            #print(words)
+            #print(sequence_lengths)
+            #print(labels)
+            #print(labels_pred)
+            for lab, lab_pred, length, word in zip(labels, labels_pred, sequence_lengths, words):
+                if self.config.use_chars:
+                    for i in range(len(word[1])):
+                        # w = "UNK"
+                        we = word[1][i]
+                        unk = "UNK"
+                        if not we.unknown:
+                            unk = "KNW"
+                        w = we.word+" "+we.processed_word+" "+unk
+                        #print(word[1][i])
+                        #print(type(word[1][i]))
+                        #if word[1][i].processed_word in idx2word:
+                            #w = idx2word[word[1][i]]
+                        #    w = word[1][i].word+" "+word[1][i].processed_word
+                        t = "O"
+                        
+                        t = lab[i]
+                        t2 = "O"
+                        if lab_pred[i] in idx2tag:
+                            t2=idx2tag[lab_pred[i]]
+                        print(w+" "+t+" "+t2)
+                else:
+                    for i in range(len(word)):
+                        #w = "UNK"
+                        #if word[i] in idx2word:
+                        #    w = idx2word[word[i]]
+                        we = word[i]
+                        unk = "UNKOWN"
+                        if not we.unknown:
+                            unk = "KNOWN"
+                        w = we.word+" "+we.processed_word+" "+unk
+                        t = "O"
+                        
+                        t = lab[i]
+                        t2 = "O"
+                        if lab_pred[i] in idx2tag:
+                            t2=idx2tag[lab_pred[i]]
+                        print(w+" "+t+" "+t2)
+                print("")
+                
 
     def predict(self, words_raw):
         """Returns list of tags

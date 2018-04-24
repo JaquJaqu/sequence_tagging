@@ -1,13 +1,19 @@
-import os
+import os,sys
 
 
 from .general_utils import get_logger
+from .data_utils import Word
 from .data_utils import get_trimmed_glove_vectors, load_vocab, \
-        get_processing_word
+        get_processing_word,get_processing_tag
+import configparser
 
+from enum import Enum
+
+
+    
 
 class Config():
-    def __init__(self, load=True):
+    def __init__(self, configfile, load=True):
         """Initialize hyperparameters and load vocabs
 
         Args:
@@ -15,18 +21,83 @@ class Config():
                 np array, else None
 
         """
+        self.setParameters(configfile)
         # directory for training outputs
-        if not os.path.exists(self.dir_output):
-            os.makedirs(self.dir_output)
-
+        if not os.path.exists(self.dir_vocab_output):
+            os.makedirs(self.dir_vocab_output)
+        if not os.path.exists(self.dir_model_output):
+            os.makedirs(self.dir_model_output)
         # create instance of logger
         self.logger = get_logger(self.path_log)
 
+        self.pad_token = Word("","", 0, False)
+        
         # load if requested (default)
         if load:
             self.load()
+    
+    def setParameters(self,configfile):
+        param = configparser.SafeConfigParser()
+        param.read(configfile)
+        self.dir_model_output=param.get('PATH','dir_model_output')
+        self.dir_vocab_output=param.get('PATH','dir_vocab_output')
+        self.dir_model=param.get('PATH','dir_model')
+        self.path_log=param.get('PATH','path_log')
+        
+        self.filename_train=param.get("PATH",'filename_train')
+        self.filename_test=param.get('PATH','filename_test')
+        self.filename_dev=param.get('PATH','filename_dev')
+       
+        self.filename_words = param.get('PATH','filename_words')
+        self.filename_tags = param.get('PATH','filename_tags')
+        self.filename_chars = param.get('PATH','filename_chars')
 
+        #embedding types: Glove, w2v, fasttext
+        try:
+            self.embedding_type = param.get("EMBEDDINGS","embedding_type")
+        except configparser.NoOptionError:
+            self.embedding_type = "Glove"
 
+        self.dim_word=param.getint('EMBEDDINGS','dim_word')
+        self.dim_char=param.getint('EMBEDDINGS','dim_char')
+        self.filename_glove=param.get('EMBEDDINGS','filename_glove')
+        self.filename_trimmed=param.get('EMBEDDINGS','filename_trimmed')
+        self.use_pretrained=param.getboolean('EMBEDDINGS','use_pretrained')
+        
+        self.use_large_embeddings = param.getboolean('EMBEDDINGS','use_large_embeddings')
+        self.oov_size = 0
+        self.oov_current_size = 0
+        if param.has_option('EMBEDDINGS','oov_size'):
+            self.oov_size = param.getint('EMBEDDINGS','oov_size')
+        self.max_iter=param['PARAM']['max_iter']
+        
+        
+        if self.use_pretrained== False and self.use_large_embeddings == True:
+            sys.stderr.write("If you want to train embeddings from scratch the use_large_embedding option is not valid\n")
+
+        if (self.max_iter=="None") :
+            self.max_iter = None
+        self.train_embeddings=param.getboolean('PARAM','train_embeddings')
+        
+        try:
+            self.lowercase = param.getboolean("PARAM","lowercase")
+        except configparser.NoOptionError:
+            self.lowercase = True
+
+        
+        self.nepochs=   param.getint('PARAM','nepochs')
+        self.dropout=   param.getfloat('PARAM','dropout')
+        self.batch_size=param.getint('PARAM','batch_size')
+        self.lr_method=param.get('PARAM','lr_method')
+        self.lr=param.getfloat('PARAM','lr')
+        self.lr_decay=param.getfloat('PARAM','lr_decay')
+        self.clip=param.getint('PARAM','clip')
+        self.nepoch_no_imprv=param.getint('PARAM','nepoch_no_imprv')
+        self.hidden_size_char=param.getint('PARAM','hidden_size_char')
+        self.hidden_size_lstm=param.getint('PARAM','hidden_size_lstm')
+        self.use_crf = param.getboolean('PARAM','use_crf')
+        self.use_chars = param.getboolean('PARAM','use_chars')
+        
     def load(self):
         """Loads vocabulary, processing functions and embeddings
 
@@ -46,59 +117,13 @@ class Config():
 
         # 2. get processing functions that map str -> id
         self.processing_word = get_processing_word(self.vocab_words,
-                self.vocab_chars, lowercase=True, chars=self.use_chars)
-        self.processing_tag  = get_processing_word(self.vocab_tags,
-                lowercase=False, allow_unk=False)
+                self.vocab_chars, lowercase=self.lowercase, chars=self.use_chars)
+        self.processing_tag  = get_processing_tag(self.vocab_tags)
 
         # 3. get pre-trained embeddings
         self.embeddings = (get_trimmed_glove_vectors(self.filename_trimmed)
                 if self.use_pretrained else None)
-
+        
 
     # general config
-    dir_output = "results/test/"
-    dir_model  = dir_output + "model.weights/"
-    path_log   = dir_output + "log.txt"
-
-    # embeddings
-    dim_word = 300
-    dim_char = 100
-
-    # glove files
-    filename_glove = "data/glove.6B/glove.6B.{}d.txt".format(dim_word)
-    # trimmed embeddings (created from glove_filename with build_data.py)
-    filename_trimmed = "data/glove.6B.{}d.trimmed.npz".format(dim_word)
-    use_pretrained = True
-
-    # dataset
-    # filename_dev = "data/coNLL/eng/eng.testa.iob"
-    # filename_test = "data/coNLL/eng/eng.testb.iob"
-    # filename_train = "data/coNLL/eng/eng.train.iob"
-
-    filename_dev = filename_test = filename_train = "data/test.txt" # test
-
-    max_iter = None # if not None, max number of examples in Dataset
-
-    # vocab (created from dataset with build_data.py)
-    filename_words = "data/words.txt"
-    filename_tags = "data/tags.txt"
-    filename_chars = "data/chars.txt"
-
-    # training
-    train_embeddings = False
-    nepochs          = 15
-    dropout          = 0.5
-    batch_size       = 20
-    lr_method        = "adam"
-    lr               = 0.001
-    lr_decay         = 0.9
-    clip             = -1 # if negative, no clipping
-    nepoch_no_imprv  = 3
-
-    # model hyperparameters
-    hidden_size_char = 100 # lstm on chars
-    hidden_size_lstm = 300 # lstm on word embeddings
-
-    # NOTE: if both chars and crf, only 1.6x slower on GPU
-    use_crf = True # if crf, training is 1.7x slower on CPU
-    use_chars = True # if char embedding, training is 3.5x slower on CPU
+    

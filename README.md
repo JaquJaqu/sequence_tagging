@@ -1,5 +1,17 @@
 # Named Entity Recognition with Tensorflow
 
+This repository contains a NER implementation using Tensorflow (based on BiLSTM + CRF and character embeddings) that is based on the implementation by [Guillaume Genthial](https://github.com/guillaumegenthial/sequence_tagging).
+
+We have mainly done the following changes:
+- move from python 2 to python 3
+- extract parameters from source code to a single config file
+- create new script for testing new files
+- create new script and modify source code for simple transfer learning
+- support for several embeddings (GloVe, fasttext, word2vec)
+
+
+
+
 This repo implements a NER model using Tensorflow (LSTM + CRF + chars embeddings).
 
 State-of-the-art performance (F1 score between 90 and 91).
