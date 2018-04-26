@@ -3,7 +3,7 @@ import os,sys
 
 from .general_utils import get_logger
 from .data_utils import Word
-from .data_utils import get_trimmed_glove_vectors, load_vocab, \
+from .data_utils import get_trimmed_embedding_vectors, load_vocab, \
         get_processing_word,get_processing_tag
 import configparser
 
@@ -60,17 +60,22 @@ class Config():
 
         self.dim_word=param.getint('EMBEDDINGS','dim_word')
         self.dim_char=param.getint('EMBEDDINGS','dim_char')
-        self.filename_glove=param.get('EMBEDDINGS','filename_glove')
-        self.filename_trimmed=param.get('EMBEDDINGS','filename_trimmed')
+        self.filename_embeddings=param.get('EMBEDDINGS','filename_embeddings')
+        self.filename_embeddings_trimmed=param.get('EMBEDDINGS','filename_embeddings_trimmed')
         self.use_pretrained=param.getboolean('EMBEDDINGS','use_pretrained')
         
         self.use_large_embeddings = param.getboolean('EMBEDDINGS','use_large_embeddings')
+        
         self.oov_size = 0
         self.oov_current_size = 0
         if param.has_option('EMBEDDINGS','oov_size'):
             self.oov_size = param.getint('EMBEDDINGS','oov_size')
+        
         self.max_iter=param['PARAM']['max_iter']
         
+        if not self.embedding_type == "fasttext" and self.oov_size>0:
+            sys.stderr.write("Embeddings for unknown words cannot be generated for "+self.embedding_type+", thus the parameter oov_size will be set to zero\n")
+            self.oov_size= 0
         
         if self.use_pretrained== False and self.use_large_embeddings == True:
             sys.stderr.write("If you want to train embeddings from scratch the use_large_embedding option is not valid\n")
@@ -98,6 +103,8 @@ class Config():
         self.use_crf = param.getboolean('PARAM','use_crf')
         self.use_chars = param.getboolean('PARAM','use_chars')
         
+        self.oov_words = []
+        
     def load(self):
         """Loads vocabulary, processing functions and embeddings
 
@@ -116,12 +123,12 @@ class Config():
         self.ntags      = len(self.vocab_tags)
 
         # 2. get processing functions that map str -> id
-        self.processing_word = get_processing_word(self.vocab_words,
-                self.vocab_chars, lowercase=self.lowercase, chars=self.use_chars)
+        self.processing_word = get_processing_word(self)
+        
         self.processing_tag  = get_processing_tag(self.vocab_tags)
 
         # 3. get pre-trained embeddings
-        self.embeddings = (get_trimmed_glove_vectors(self.filename_trimmed)
+        self.embeddings = (get_trimmed_embedding_vectors(self.filename_embeddings_trimmed)
                 if self.use_pretrained else None)
         
 

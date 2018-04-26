@@ -3,7 +3,7 @@ import os, sys
 import tensorflow as tf
 
 
-from .data_utils import minibatches, pad_sequences, get_chunks
+from .data_utils import minibatches, pad_sequences, get_chunks,get_oov_embeddings
 from .data_utils import load_vocab_rev
 from .general_utils import Progbar
 from .base_model import BaseModel
@@ -99,12 +99,6 @@ class NERModel(BaseModel):
         if not labels == None:
             labels = self.extract_labels(labels_word)
                 
-#        print(type(word_ids))
-#        for w in word_ids:
-#            print(type(w))
-#            for wi in w:    
-#                print("WORD:"+wi.word)
-        # build feed dictionary
         
         feed = {
             self.word_ids: word_ids,
@@ -112,7 +106,7 @@ class NERModel(BaseModel):
         }
         if self.config.use_large_embeddings:
             feed[self.word_embeddings_values]= self.config.embeddings
-
+            feed[self.backoff_embeddings_change_values] = self.config.oov_embeddings
         if self.config.use_chars:
             feed[self.char_ids] = char_ids
             feed[self.word_lengths] = word_lengths
@@ -173,20 +167,31 @@ class NERModel(BaseModel):
                         trainable=self.config.train_embeddings)
                 # check if random or OOV embeddings are added
                 if self.config.oov_size>0:
-                    backoff_embeddings_rand = tf.get_variable(
-                                name="backoff_embeddings_rand",
-                                shape=[self.config.oov_size-self.config.oov_current_size, self.config.dim_word],
-                                initializer=tf.random_uniform_initializer(-0.04, 0.04),
-                                trainable=self.config.train_embeddings)
-                    backoff_embeddings_change = tf.get_variable(
-                                name="backoff_embeddings_change",
-                                shape=[self.config.oov_current_size, self.config.dim_word],
-                                initializer=tf.random_uniform_initializer(-0.04, 0.04),
-                                trainable=self.config.embeddings_oov)
-            #self._word_embeddings = _word_embeddings
+                    embeddings_oov = get_oov_embeddings(self.config)
+                    
+                    if self.config.use_large_embeddings==True:
+                        backoff_embeddings_change=tf.placeholder(
+                            name="backoff_embeddings_change_values",
+                            dtype=tf.float32,
+                            shape=[self.config.oov_words, self.config.dim_word])
+                        self.config.oov_embeddings = embeddings_oov
+                    else:
+                        backoff_embeddings_change = tf.Variable(
+                            embeddings_oov,
+                            name="backoff_embeddings_change",
+                            dtype=tf.float32,
+                            trainable=self.config.train_embeddings)
+                    _new_word_embeddings = tf.concat([_word_embeddings,backoff_embeddings_change], axis=0)
+                    
+                    
             if self.config.use_large_embeddings:
                 self.word_embeddings_values = _word_embeddings
-            word_embeddings = tf.nn.embedding_lookup(_word_embeddings,
+                self.backoff_embeddings_change_values = backoff_embeddings_change
+            if self.config.oov_size>0:
+                word_embeddings = tf.nn.embedding_lookup(_new_word_embeddings,
+                    self.word_ids, name="word_embeddings")
+            else:    
+                word_embeddings = tf.nn.embedding_lookup(_word_embeddings,
                     self.word_ids, name="word_embeddings")
             
 
@@ -225,6 +230,9 @@ class NERModel(BaseModel):
                 word_embeddings = tf.concat([word_embeddings, output], axis=-1)
 
         self.word_embeddings =  tf.nn.dropout(word_embeddings, self.dropout)
+
+
+    
 
 
     def add_logits_op(self):
@@ -311,7 +319,6 @@ class NERModel(BaseModel):
             sequence_length
 
         """
-        #print(type(words[0][0]))
         fd, sequence_lengths = self.get_feed_dict(words, dropout=1.0)
 
         if self.config.use_crf:
@@ -419,36 +426,21 @@ class NERModel(BaseModel):
     
     def predict_test(self,test):
         
-        idx2word = load_vocab_rev(self.config.filename_words)
+        #idx2word = load_vocab_rev(self.config.filename_words)
         idx2tag  = load_vocab_rev(self.config.filename_tags)
         
-        #for l in open(test_file):
-            
-        #    ls = l.strip().split()
-        #    w = ls[0]
-        #    l = ls[1]
                 
          
         for words, labels in minibatches(test, self.config.batch_size):
             labels_pred, sequence_lengths = self.predict_batch(words)
-            #print(words)
-            #print(sequence_lengths)
-            #print(labels)
-            #print(labels_pred)
-            for lab, lab_pred, length, word in zip(labels, labels_pred, sequence_lengths, words):
+   
+        for lab, lab_pred, length, word in zip(labels, labels_pred, sequence_lengths, words):
                 if self.config.use_chars:
                     for i in range(len(word[1])):
-                        # w = "UNK"
+
                         we = word[1][i]
-                        unk = "UNK"
-                        if not we.unknown:
-                            unk = "KNW"
+                        unk = we.unknown.name
                         w = we.word+" "+we.processed_word+" "+unk
-                        #print(word[1][i])
-                        #print(type(word[1][i]))
-                        #if word[1][i].processed_word in idx2word:
-                            #w = idx2word[word[1][i]]
-                        #    w = word[1][i].word+" "+word[1][i].processed_word
                         t = "O"
                         
                         t = lab[i]
@@ -458,13 +450,8 @@ class NERModel(BaseModel):
                         print(w+" "+t+" "+t2)
                 else:
                     for i in range(len(word)):
-                        #w = "UNK"
-                        #if word[i] in idx2word:
-                        #    w = idx2word[word[i]]
                         we = word[i]
-                        unk = "UNKOWN"
-                        if not we.unknown:
-                            unk = "KNOWN"
+                        unk = we.unknown.name
                         w = we.word+" "+we.processed_word+" "+unk
                         t = "O"
                         

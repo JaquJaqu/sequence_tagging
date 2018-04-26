@@ -104,7 +104,7 @@ class BaseModel(object):
                 self.sess.graph)
 
 
-    def train(self, train, dev,output_dir= None):
+    def train(self, train, dev,nepochs=None, output_dir= None):
         """Performs training with early stopping and lr exponential decay
 
         Args:
@@ -117,10 +117,11 @@ class BaseModel(object):
         best_score = 0
         nepoch_no_imprv = 0 # for early stopping
         self.add_summary() # tensorboard
-
-        for epoch in range(self.config.nepochs):
+        if nepochs== None:
+           nepochs = self.config.nepochs 
+        for epoch in range(nepochs):
             self.logger.info("Epoch {:} out of {:}".format(epoch + 1,
-                        self.config.nepochs))
+                        nepochs))
 
             score = self.run_epoch(train, dev, epoch)
             self.config.lr *= self.config.lr_decay # decay learning rate

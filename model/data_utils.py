@@ -1,6 +1,7 @@
 import numpy as np
-import os
+import sys
 import fastText
+from enum import Enum
 
 # shared global variables to be imported from model also
 UNK = "$UNK$"
@@ -23,8 +24,8 @@ trimm your word vectors.
         super(MyIOError, self).__init__(message)
 
 class Embeddings(object):
-    def __init__(self):
-        k = 13
+   
+        
     def getEmbeddingVector(self):
         return None
     def load(self,filename):
@@ -32,8 +33,12 @@ class Embeddings(object):
     def save(self,outputfile):
         return None
     
+class Unknown(Enum):
+    UNKNOWN=1
+    KNOWN=2
+    UNKNOWN_ADD=3
 class Word(object):
-    def __init__(self,word,processed_word, identifier, unknown=False):
+    def __init__(self,word,processed_word, identifier, unknown=Unknown.KNOWN):
         self.word = word
         self.processed_word  = processed_word
         self.identifier=identifier
@@ -89,22 +94,20 @@ class CoNLLDataset(object):
                         niter += 1
                         if self.max_iter is not None and niter > self.max_iter:
                             break
-                        #print(words)
                         yield words, tags
                         words, tags = [], []
                 else:
                     ls = line.split()
                     
                     word, tag = ls[0],ls[-1]
-                    #print(tag+"\t"+word)
+                    
                     if self.processing_word is not None:
                         word = self.processing_word(word)
                     if self.processing_tag is not None:
                         tag = self.processing_tag(tag)
                     words += [word]
                     tags += [tag]
-                    #print(str(tag)+"\t"+str(word))
-                    #print ("--------------")
+                    
             if len(words)>0:
                 yield words,tags
     def __len__(self):
@@ -159,7 +162,7 @@ def get_char_vocab(dataset):
     return vocab_char
 
 
-def get_glove_vocab(filename):
+def get_vocab(filename):
     """Load vocab from file
 
     Args:
@@ -237,7 +240,28 @@ def load_vocab_rev(filename):
             d[idx] = word
     return d
 
-def export_trimmed_glove_vectors(vocab, glove_filename, trimmed_filename, dim,embedding_type):
+
+def get_oov_embeddings(config):
+    if not config.embedding_type == "fasttext":
+        sys.stderr.write("OOV replacement only works with fasttext!\n")
+        sys.exit(0)
+    model = fastText.load_model(config.filename_embeddings)
+    oov_embeddings = np.zeros((config.oov_size,config.dim_word))
+    
+    i = 0
+    for word in config.oov_words:
+        oov_embeddings[i,]=model.get_word_vector(word)
+        config.vocab_words[word]= len(config.vocab_words)
+        i+=1
+    all_words = model.get_words()
+    import random
+    
+    for i in range(len(config.oov_words),config.oov_size):
+        rand_word_id = random.randint(0,len(all_words))
+        rand_word = all_words[rand_word_id]
+        oov_embeddings[i,]=model.get_word_vector(rand_word)
+    return oov_embeddings
+def export_trimmed_embedding_vectors(vocab, glove_filename, trimmed_filename, dim,embedding_type):
     """Saves glove vectors in numpy array
 
     Args:
@@ -268,7 +292,7 @@ def export_trimmed_glove_vectors(vocab, glove_filename, trimmed_filename, dim,em
     np.savez_compressed(trimmed_filename, embeddings=embeddings)
 
 
-def get_trimmed_glove_vectors(filename,is_glove=True):
+def get_trimmed_embedding_vectors(filename):
     """
     Args:
         filename: path to the npz file
@@ -289,23 +313,62 @@ def get_trimmed_glove_vectors(filename,is_glove=True):
     except IOError:
         raise MyIOError(filename)
 
-def get_same_word(vocab_words=None, vocab_chars=None,
-                    lowercase=False, chars=False, allow_unk=True):
-    def f(word):
-        return word
 
-def get_processing_tag(vocab_words):
-    def f(word):
-        if word in vocab_words:
-            tag_id = vocab_words[word]
+
+def get_processing_tag(vocab):
+    """
+    Args:
+        vocab: vocabulary of the tagset
+
+    Returns:
+        a function that returns the id for a specific tag
+
+    """
+    def f(tag):
+        if tag in vocab:
+            tag_id = vocab[tag]
             return tag_id;
         else:
             raise Exception("Unknow key is not allowed. Check that "\
                                 "your vocab (tags?) is correct")
     return f
-        
-def get_processing_word(vocab_words=None, vocab_chars=None,
-                    lowercase=False, chars=False, allow_unk=True):
+
+def preprocessing_word(word,lowercase):
+    # 1. preprocess word
+    processed_word = word
+    if lowercase:
+         processed_word = word.lower()
+    if word.isdigit():
+         processed_word = NUM
+    return processed_word         
+
+
+def add_oov_words(dataset, config):
+    oov_size = config.oov_size
+    if oov_size ==0:
+        return
+    for words, tags in dataset:
+         
+        for char,word in words:
+            pword = word.processed_word
+            if word.unknown ==Unknown.UNKNOWN:
+                if pword in config.vocab_words:
+                    word.unknown = Unknown.UNKNOWN_ADD
+                    word.identifier = config.vocab_words[pword]
+                        
+                    continue
+                    
+                if oov_size > config.oov_current_size:
+                    config.vocab_words[pword]=len(config.vocab_words)   
+                    word.unknown = Unknown.UNKNOWN_ADD
+                    word.identifier = config.vocab_words[pword]
+                    config.oov_words.append(pword)
+                    config.oov_current_size+=1
+                    
+                
+
+         
+def get_processing_word(config):
     """Return lambda function that transform a word (string) into list,
     or tuple of (list, id) of int corresponding to the ids of the word and
     its corresponding characters.
@@ -318,9 +381,26 @@ def get_processing_word(vocab_words=None, vocab_chars=None,
                  = (list of char ids, word id)
 
     """
+    
+    # set the parameters based on the configuration object
+    vocab_words=None
+    if hasattr(config, 'vocab_words'):
+        vocab_words = config.vocab_words
+    vocab_chars=None
+    if hasattr(config, 'vocab_chars'):
+        vocab_chars = config.vocab_chars
+    lowercase= config.lowercase
+    
+    use_chars = config.use_chars
+    allow_unk = True
+    if hasattr(config, 'allow_unk'):
+        allow_unk = config.allow_unk
+    
+    
+    
     def f(word):
         # 0. get chars of words
-        if vocab_chars is not None and chars == True:
+        if vocab_chars is not None and use_chars == True:
             char_ids = []
             for char in word:
                 # ignore chars out of vocabulary
@@ -328,33 +408,30 @@ def get_processing_word(vocab_words=None, vocab_chars=None,
                     char_ids += [vocab_chars[char]]
 
         # 1. preprocess word
-        processed_word = word
-        if lowercase:
-            processed_word = word.lower()
-        if word.isdigit():
-            processed_word = NUM
+        processed_word = preprocessing_word(word,lowercase)
         
         # 2. get id of word
-        unknown =False
+        unknown =Unknown.KNOWN
         word_id = -1
+        
         if vocab_words is not None:
             if processed_word in vocab_words:
                 word_id = vocab_words[processed_word]
+                if processed_word in config.oov_words:
+                    unknown = Unknown.UNKNOWN_ADD
             else:
-                
                 if allow_unk:
                     word_id = vocab_words[UNK]
-                    unknown = True
+                    unknown = Unknown.UNKNOWN
                 else:
                     raise Exception("Unknow key is not allowed. Check that "\
                                     "your vocab (tags?) is correct")
         w = Word(word, processed_word,word_id,unknown)
         # 3. return tuple char ids, word id
-        if vocab_chars is not None and chars == True:
+        if vocab_chars is not None and use_chars == True:
             return char_ids, w
         else:
             return w
-
     return f
 
 
@@ -448,15 +525,8 @@ def get_chunk_type(tok, idx_to_tag):
         tuple: "B", "PER"
 
     """
-    #tag_name = idx_to_tag[tok]
-    #print(tok.word)
-    #print(tok.identifier)
-    #print(tok.processed_word)
-    #if type(tok)==np.int32:
-    #    idx_to_tag
     tag_name = idx_to_tag[tok]
-    #else:
-    #    tag_name  =tok.word
+    
     tag_class = tag_name.split('-')[0]
     tag_type = tag_name.split('-')[-1]
     return tag_class, tag_type
@@ -479,7 +549,6 @@ def get_chunks(seq, tags):
 
     """
     default = tags[NONE]
-    #print(tags)
     idx_to_tag = {idx: tag for tag, idx in tags.items()}
     chunks = []
     chunk_type, chunk_start = None, None
