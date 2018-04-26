@@ -1,6 +1,7 @@
 # Named Entity Recognition with Tensorflow
 
-This repository contains a NER implementation using Tensorflow (based on BiLSTM + CRF and character embeddings) that is based on the implementation by [Guillaume Genthial](https://github.com/guillaumegenthial/sequence_tagging).
+This repository contains a NER implementation using Tensorflow (based on BiLSTM + CRF and character embeddings) that is based on the implementation by [Guillaume Genthial](https://github.com/guillaumegenthial/sequence_tagging). We have modified this implementation including its documentation. The major changes are listed below:
+
 
 Mainly, we have done the following changes:
 - convert from python 2 to python 3
@@ -13,17 +14,29 @@ Mainly, we have done the following changes:
 
 
 
+Table of Content
+================
 
 
-This repo implements a NER model using Tensorflow (LSTM + CRF + chars embeddings).
+  * [Task of Named Entity Recognition](#task-of-named-entity-recognition)
+  * [Machine Learning Model](#machine-learning-model)
+  * [Requirements](#requirements)
+  * [Run an Existing Model](#run-an-existing-model)
+  * [Train a New Model](#train-a-new-model)
+  * [Citation](#citation)
+  * [License](#license)
+  
 
-State-of-the-art performance (F1 score between 90 and 91).
 
-Check the [blog post](https://guillaumegenthial.github.io/sequence-tagging-with-tensorflow.html)
 
-## Task
 
-Given a sentence, give a tag to each word. A classical application is Named Entity Recognition (NER). Here is an example
+
+
+
+Task of Named Entity Recognition
+================
+
+The task of Named Entity Recognition (NER) is to predict the type of entity. Classical NER targets on the identification of locations (LOC), persons (PER), organization (ORG) and other (OTH). Here is an example
 
 ```
 John   lives in New   York
@@ -31,14 +44,58 @@ B-PER  O     O  B-LOC I-LOC
 ```
 
 
-## Model
+Machine Learning Model
+================
 
-Similar to [Lample et al.](https://arxiv.org/abs/1603.01360) and [Ma and Hovy](https://arxiv.org/pdf/1603.01354.pdf).
+The model is similar to [Lample et al.](https://arxiv.org/abs/1603.01360) and [Ma and Hovy](https://arxiv.org/pdf/1603.01354.pdf). A more detailed description can be found [here](https://guillaumegenthial.github.io/sequence-tagging-with-tensorflow.html).
 
 - concatenate final states of a bi-lstm on character embeddings to get a character-based representation of each word
-- concatenate this representation to a standard word vector representation (GloVe here)
+- concatenate this representation to a standard word vector representation (GloVe, Word2Vec, FastText here)
 - run a bi-lstm on each sentence to extract contextual representation of each word
 - decode with a linear chain CRF
+
+
+Run an Existing Model
+================
+
+Train a New Model
+================
+
+
+
+
+Requirements
+================
+To run the sourcecode you need to install the requirements from the [file](https://github.com/riedlma/sequence_tagging/blob/master/requirements.txt).
+In addition, you need to build fastText manually, as described [here](https://github.com/facebookresearch/fastText/tree/master/python).
+
+
+
+
+
+Citation
+================
+If you use this model cite the source code of [Guillaume Genthial](https://github.com/guillaumegenthial/sequence_tagging). If you use the German model and the extension, you can cite our paper:
+
+```
+@inproceedings{riedl18:_named_entit_recog_shoot_german,
+  title = {A Named Entity Recognition Shootout for {German}},
+  author = {Riedl, Martin and Padó, Sebastian},
+  booktitle = {Proceedings of Annual Meeting of the Association for Computational Linguistics},
+  series={ACL 2018},
+  address = {Melbourne, Australia},
+  note = {To appear},
+  year = 2018
+}
+
+```
+
+
+License
+================
+
+This project is licensed under the terms of the Apache 2.0 ASL license (as Tensorflow and derivatives). If used for research, citation would be appreciated.
+
 
 
 
@@ -124,7 +181,5 @@ train_filename = "data/coNLL/eng/eng.train.iob"
 
 
 
-## License
 
-This project is licensed under the terms of the apache 2.0 license (as Tensorflow and derivatives). If used for research, citation would be appreciated.
 
