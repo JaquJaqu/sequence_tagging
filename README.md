@@ -18,13 +18,15 @@ Table of Content
 ================
 
 
-  * [Task of Named Entity Recognition](#task-of-named-entity-recognition)
-  * [Machine Learning Model](#machine-learning-model)
-  * [Requirements](#requirements)
-  * [Run an Existing Model](#run-an-existing-model)
-  * [Train a New Model](#train-a-new-model)
-  * [Citation](#citation)
-  * [License](#license)
+ - [Task of Named Entity Recognition](#task-of-named-entity-recognition)
+ - [Machine Learning Model](#machine-learning-model)
+ - [Requirements](#requirements)
+ - [Run an Existing Model](#run-an-existing-model)
+   * [Download computed models](#download-computed-models)
+   * [Download Embeddings](#download-embeddings) 
+- [Train a New Model](#train-a-new-model)
+ - [Citation](#citation)
+ - [License](#license)
   
 
 
@@ -33,8 +35,7 @@ Table of Content
 
 
 
-Task of Named Entity Recognition
-================
+## Task of Named Entity Recognition
 
 The task of Named Entity Recognition (NER) is to predict the type of entity. Classical NER targets on the identification of locations (LOC), persons (PER), organization (ORG) and other (OTH). Here is an example
 
@@ -44,8 +45,7 @@ B-PER  O     O  B-LOC I-LOC
 ```
 
 
-Machine Learning Model
-================
+## Machine Learning Model
 
 The model is similar to [Lample et al.](https://arxiv.org/abs/1603.01360) and [Ma and Hovy](https://arxiv.org/pdf/1603.01354.pdf). A more detailed description can be found [here](https://guillaumegenthial.github.io/sequence-tagging-with-tensorflow.html).
 
@@ -55,17 +55,21 @@ The model is similar to [Lample et al.](https://arxiv.org/abs/1603.01360) and [M
 - decode with a linear chain CRF
 
 
-Run an Existing Model
-================
+## Run an Existing Model
 
-Train a New Model
-================
+### Download computed models
 
-
+### Download Embeddings
 
 
-Requirements
-================
+## Train a New Model
+
+
+
+
+##Requirements
+
+
 To run the sourcecode you need to install the requirements from the [file](https://github.com/riedlma/sequence_tagging/blob/master/requirements.txt).
 In addition, you need to build fastText manually, as described [here](https://github.com/facebookresearch/fastText/tree/master/python).
 
@@ -73,8 +77,9 @@ In addition, you need to build fastText manually, as described [here](https://gi
 
 
 
-Citation
-================
+## Citation
+
+
 If you use this model cite the source code of [Guillaume Genthial](https://github.com/guillaumegenthial/sequence_tagging). If you use the German model and the extension, you can cite our paper:
 
 ```
@@ -91,8 +96,7 @@ If you use this model cite the source code of [Guillaume Genthial](https://githu
 ```
 
 
-License
-================
+## License
 
 This project is licensed under the terms of the Apache 2.0 ASL license (as Tensorflow and derivatives). If used for research, citation would be appreciated.
 
