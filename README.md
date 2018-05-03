@@ -21,11 +21,10 @@ Table of Content
  - [Task of Named Entity Recognition](#task-of-named-entity-recognition)
  - [Machine Learning Model](#machine-learning-model)
  - [Requirements](#requirements)
- - [Run an Existing Model](#run-an-existing-model)
-   * [Download omputed models](#download-computed-models)
-   * [Download Embeddings](#download-embeddings) 
+ - [Run an Pre-computed Model](#run-an-existing-model)
+ - [Download Models and Embeddings](#download-models-and-embeddings)
+   * [Manual Download](#manual-download)
    * [Automatic Download](#automatic-download)
-   * [Example for a precomputed model](#example-for-a-precomputed-model)
  - [Train a New Model](#train-a-new-model)
  - [Citation](#citation)
  - [License](#license)
@@ -57,61 +56,12 @@ The model is similar to [Lample et al.](https://arxiv.org/abs/1603.01360) and [M
 - decode with a linear chain CRF
 
 
-## Run an Existing Model
+## Run an Pre-computed Model
 
-To run pre-computed models, you need to download the model and the embeddings. This can be done automatically with a python script as described [here](#automatic-download). However, the models and the embeddings can also be downloaded manually as described in the next two sections.
-
-### Download computed models
-
-We provide the best performing model for each dataset. For an automatic download follow the description [here](#automatic-download). All models have been trained using transfer learning techniques. To use the models they have to be uncompresser (tar xfvz *tar.gz)
-
-|  Optimized for | Trained | Transfer Learning |Embeddings| Download|
-|----------------|------------|---------|
-| GermEval 2014 | CoNLL2003| GermEval 2014 | |German Wikipedia|[link](http://www2.ims.uni-stuttgart.de/data/ner_de/models/model_transfer_learning_conll2003_germeval_emb_wiki.tar.gz) |
-| CoNLL 2003 (German) | GermEval 2014 | CoNLL 2003 | German Wikipedia|[link](http://www2.ims.uni-stuttgart.de/data/ner_de/models/model_transfer_learning_conll2003_germeval_emb_wiki.tar.gz) |
-| ONB | GermEval 2014 | ONB | German Europeana |  [link](http://www2.ims.uni-stuttgart.de/data/ner_de/models/model_transfer_learning_germeval_onb_emb_euro.tar.gz) |
-| LFT | GermEval 2014 | LFT | German Wikipedia | [link](http://www2.ims.uni-stuttgart.de/data/ner_de/models/model_transfer_learning_germeval_lft_emb_wiki.tar.gz) |
+To run pre-computed models, you need to download the model and the embeddings. This can be done automatically with a python script as described [here](#automatic-download). However, the models and the embeddings can also be downloaded manually as described [here](#).
 
 
-
-
-
-### Download Embeddings
-
-The German embeddings can be downloaded here. We provide the full embeddings (named Complete) and the filtered embeddings, which only contain the vocabulary of the data of the task. These filtered models have also been used to train the pre-computed models. 
-
-| Name | Computed on | Dimensions | Complete  | Filtered|
-|------|-------------|------------|-----------|---------|
-| Wiki | German Wikipedia | 300   | [link](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.de.zip)  |  [link](http://www2.ims.uni-stuttgart.de/data/ner_de//embeddings/fasttext.wiki.de.bin.trimmed.npz)|
-| Euro | German Europeana | 300   |  [link](http://www2.ims.uni-stuttgart.de/data/ner_de//embeddings/fasttext.german.europeana.skip.300.bin) | [link](http://www2.ims.uni-stuttgart.de/data/ner_de//embeddings/fasttext.german.europeana.skip.300.bin.trimmed.npz) |
-
-### Automatic Download
-
-Using the python script *download_model_embeddings.py* the models and the embeddings can be donwloaded automatically. You can choose between the several options:
-
-```
-~ user$ python3 download_model_embeddings.py 
-
-No download option has been specified:
-python download_model_embeddings.py options
-
-Following download options are possible:
-all         download all models and embeddings
-all_models  download all models
-all_embed   download all embeddings
-GermEval	download best model and embeddings for GermEval
-CONLL2003	download best model and embeddings for CONLL2003
-ONB		    download best model and embeddings for ONB
-LFT		    download best model and embeddings for LFT
-
-```
-
-Using this script models and embeddings are also uncompressed. 
-
-
-### Example for a precomputed model
-
-We will give an example for using the best GermEval model (including downloading the models).
+Here, we will fully describe, how to apply the best performing GermEval model to a new file.
 First, we need to download the project, the model and the embeddings:
 
 ```
@@ -156,6 +106,59 @@ erstellt erstellt KNOWN erstellt O
 . . KNOWN . O
 ```
 
+
+
+## Download Models and Embeddings
+We provide the best performing model for the following datasets:
+
+| Name| Language | Description| Download| 
+| CoNLL 2003 | German | NER dataset based on Newspaper | [link](https://www.clips.uantwerpen.be/conll2003/ner/)
+| GermEval 2014 | German | NER dataset based on Wikipedia | [link](https://sites.google.com/site/germeval2014ner/)|
+| ONB| German |NER dataset based on texts of the Austrian National Library from 1710 and 1873 |[link](http://github.com/KBNLresearch/europeananp-ner/)|
+| LFT | German | NER dataset based on text of the Dr Friedrich Teßmann Library from 1926 | [link](http://github.com/KBNLresearch/europeananp-ner/)|
+
+All provided models are trained using transfer learning techniques. The models and the embeddings can be downloaded [manually](#manual-download) or [automatically](#automatic-download).
+
+
+### Manual Download
+
+The models can be downloaded as described in the table. The models should be stored directly on the project directory. Furthermore, they need to be uncompressed (*tar xfvz \*tar.gz *)
+
+|  Optimized for | Trained | Transfer Learning |Embeddings| Download|
+|----------------|------------|---------|
+| GermEval 2014 | CoNLL2003| GermEval 2014 | |German Wikipedia|[link](http://www2.ims.uni-stuttgart.de/data/ner_de/models/model_transfer_learning_conll2003_germeval_emb_wiki.tar.gz) |
+| CoNLL 2003 (German) | GermEval 2014 | CoNLL 2003 | German Wikipedia|[link](http://www2.ims.uni-stuttgart.de/data/ner_de/models/model_transfer_learning_conll2003_germeval_emb_wiki.tar.gz) |
+| ONB | GermEval 2014 | ONB | German Europeana |  [link](http://www2.ims.uni-stuttgart.de/data/ner_de/models/model_transfer_learning_germeval_onb_emb_euro.tar.gz) |
+| LFT | GermEval 2014 | LFT | German Wikipedia | [link](http://www2.ims.uni-stuttgart.de/data/ner_de/models/model_transfer_learning_germeval_lft_emb_wiki.tar.gz) |
+
+The embeddings should best be stored in the folder *embeddings* inside the project folder.
+We provide the full embeddings (named Complete) and the filtered embeddings, which only contain the vocabulary of the data of the task. These filtered models have also been used to train the pre-computed models. 
+
+| Name | Computed on | Dimensions | Complete  | Filtered|
+|------|-------------|------------|-----------|---------|
+| Wiki | German Wikipedia | 300   | [link](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.de.zip)  |  [link](http://www2.ims.uni-stuttgart.de/data/ner_de//embeddings/fasttext.wiki.de.bin.trimmed.npz)|
+| Euro | German Europeana | 300   |  [link](http://www2.ims.uni-stuttgart.de/data/ner_de//embeddings/fasttext.german.europeana.skip.300.bin) | [link](http://www2.ims.uni-stuttgart.de/data/ner_de//embeddings/fasttext.german.europeana.skip.300.bin.trimmed.npz) |
+
+### Automatic Download
+
+Using the python script *download_model_embeddings.py* the models and the embeddings can be donwloaded automatically. In addition, the files are placed at the recommended location and are uncompressed.  You can choose between the several options:
+
+```
+~ user$ python3 download_model_embeddings.py 
+
+No download option has been specified:
+python download_model_embeddings.py options
+
+Following download options are possible:
+all         download all models and embeddings
+all_models  download all models
+all_embed   download all embeddings
+GermEval	download best model and embeddings for GermEval
+CONLL2003	download best model and embeddings for CONLL2003
+ONB		    download best model and embeddings for ONB
+LFT		    download best model and embeddings for LFT
+
+```
 
 
 ## Train a New Model
