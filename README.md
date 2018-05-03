@@ -215,9 +215,9 @@ filename_test =  corpora/GermEval/NER-de-test.tsv.conv
 [EMBEDDINGS]
 ...
 # path to the embeddings that are used
-filename_embeddings = TODO
+filename_embeddings = ./embeddings/wiki.de.bin
 # path where the embeddings defined by train/dev/test are written to
-filename_embeddings_trimmed = TODO
+filename_embeddings_trimmed = ./embeddings/wiki.de.bin.trimmed.npz
 ...
 
 ```
