@@ -21,7 +21,7 @@ Table of Content
  - [Task of Named Entity Recognition](#task-of-named-entity-recognition)
  - [Machine Learning Model](#machine-learning-model)
  - [Requirements](#requirements)
- - [Run an Pre-computed Model](#run-an-existing-model)
+ - [Run an Existing Model](#run-an-existing-model)
  - [Download Models and Embeddings](#download-models-and-embeddings)
    * [Manual Download](#manual-download)
    * [Automatic Download](#automatic-download)
@@ -56,9 +56,9 @@ The model is similar to [Lample et al.](https://arxiv.org/abs/1603.01360) and [M
 - decode with a linear chain CRF
 
 
-## Run an Pre-computed Model
+## Run an Existing Model
 
-To run pre-computed models, you need to download the model and the embeddings. This can be done automatically with a python script as described [here](#automatic-download). However, the models and the embeddings can also be downloaded manually as described [here](#).
+To run pre-computed models, you need to download the model and the embeddings. This can be done automatically with a python script as described [here](#automatic-download). However, the models and the embeddings can also be downloaded manually as described [here](#manual-download).
 
 
 Here, we will fully describe, how to apply the best performing GermEval model to a new file.
