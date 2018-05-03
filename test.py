@@ -14,7 +14,10 @@ from model.data_utils import CoNLLDataset, get_vocabs, UNK, NUM, \
     export_trimmed_embedding_vectors, get_processing_word, add_oov_words
 #import json
 
-    
+if len(sys.argv)<3:
+    sys.stderr.write("No arguments have been provided\n")
+    sys.stderr.write("python %s config_file test_file.conll\n"%(sys.argv[0]))    
+    sys.exit(0)
 config_file = sys.argv[1]
 filename_test = sys.argv[2]
 

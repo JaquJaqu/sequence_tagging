@@ -32,7 +32,10 @@ def readResults(f):
             f = conv(ls[7])
             return [p,r,f]
 
-    
+if len(sys.argv)< 4:
+    sys.stderr.write("No arguments have been specified to execute the script:\n")
+    sys.stderr.write("python %s configuration transfer_training.conll transfer_test.conll\n" %(sys.argv[0]))
+    sys.exit(0)
 config_file = sys.argv[1]
 filename_train2 = sys.argv[2]
 filename_dev2 = sys.argv[3]

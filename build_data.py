@@ -21,6 +21,11 @@ def main():
         config: (instance of Config) has attributes like hyper-params...
 
     """
+    
+    if len(sys.argv)<2:
+        sys.stderr.write("Too few arguments have been specified\n")
+        sys.stderr.write("python "+sys.argv[0]+" config [additional vocabulary in conll format]\n")
+        sys.exit(0)    
     # get config and processing of words
     config_file = sys.argv[1]
     

@@ -231,7 +231,12 @@ Before we train the model, we build a matrix of the embeddings that are containe
 python3 build_vocab.py model_germeval/config
 ```
 
-If you want to apply the model to other vocabulary then the one specified in train/dev/test, the model will not have any word representation and will mainly rely on the character word embedding. To prevent this, the easiest way is to add them to either the test or dev set file.
+If you want to apply the model to other vocabulary then the one specified in train/dev/test, the model will not have any word representation and will mainly rely on the character word embedding. To prevent this, the easiest way is to add them in the CoNLL format as further parameters to the *build_vocab.py* script:
+
+```
+python3 build_vocab.py model_germeval/config vocab1.conll vocab2.conll
+```
+
 
 After that step, the new model can be trained, using the following command: 
 
@@ -249,7 +254,22 @@ python3 test.py model_germeval/config corpora/GermEval/NER-de-test.tsv.conv
 
 ## Transfer Learning to another dataset
 
-For performing the transfer learning you first need to train a model e.g. based on the GermEval data as described [here](#train-a-new-model). Be aware, that 
+For performing the transfer learning you first need to train a model e.g. based on the GermEval data as described [here](#train-a-new-model). Be aware, that you added the vocabulary and the tagsets when training the basic model. The easiest way is to add them as additional parameters, when building the vocabulary, e.g.:
+
+```
+python3 build_vocab.py model_germeval/config transfer_training.conll transfer_dev.conll test_transfer.conll
+```
+
+Whereas there is not explicit parameter fitting to these words, in this way the embeddings will be available for the model. 
+
+After the model has been trained the transfer learning step can be accomplished with the *transfer_learning.py* script, that expects the following parameters:
+
+```
+python transfer_learning.py configuration transfer_training.conll transfer_dev.conll
+```
+
+After the training, new text files in the domain of the transfer learning files as described [here](#test-a-model).
+
 
 ## Test a Model
 
