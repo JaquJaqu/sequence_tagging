@@ -29,6 +29,8 @@ Table of Content
    * [Manual Download](#manual-download)
    * [Automatic Download](#automatic-download)
  - [Train a New Model](#train-a-new-model)
+ - [Transfer Learning](#transfer-learning)
+ - [Test a Model](#test-a-model)
  - [Parameters in the Configuration File](#parameters-in-the-configuration-file) 
  - [Citation](#citation)
  - [License](#license)
@@ -252,7 +254,7 @@ python3 test.py model_germeval/config corpora/GermEval/NER-de-test.tsv.conv
 
 
 
-## Transfer Learning to another dataset
+## Transfer Learning
 
 For performing the transfer learning you first need to train a model e.g. based on the GermEval data as described [here](#train-a-new-model). Be aware, that you added the vocabulary and the tagsets when training the basic model. The easiest way is to add them as additional parameters, when building the vocabulary, e.g.:
 
@@ -280,6 +282,8 @@ python3 test.py model_configuration test_set
 ```
 
 ## Parameters in the Configuration File
+
+The configuration file is divided in three sections. The section PATH contains all variables that specify the locations of the model and labeled data. The EMBEDDINGS section contains all parameters for the word embeddings and the PARAM section contains all further parameters for the machine learning as well as pre-processing.
 
 ```
 [PATH]
