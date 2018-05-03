@@ -40,8 +40,8 @@ def main():
     if len(sys.argv)>2:
         for i in range(2,len(sys.argv)):
             wo,tg = get_vocabs([CoNLLDataset(sys.argv[i],processing_word)])
-            vocab_words = vocab_words & wo
-            vocab_tags = vocab_tags & tg
+            vocab_words |=  wo
+            vocab_tags |=  tg
     #if config.use_pretrained:
     #    vocab_glove = get_vocab(config.filename_embeddings)
     #if config.use_pretrained:

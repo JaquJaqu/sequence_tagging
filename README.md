@@ -196,7 +196,7 @@ mkdir model_germeval
 Then, we create the configuration file. For this, we use the configuration template ( [config.template](https://github.com/riedlma/sequence_tagging/blob/master/config.template)) and copy it to the model folder:
 
 ``` 
-cp config.template model_germeval
+cp config.template model_germeval/config
 ```
 
 At least, all parameters that have as value *TODO* need to be adjusted. Using the current setting, we adjust following parameters (a more detailed description of the configuration is found [here](#parameters-in-the-configuration-file)):
@@ -213,7 +213,10 @@ filename_test =  corpora/GermEval/NER-de-test.tsv.conv
 ... 
 
 [EMBEDDINGS]
-...
+# dimension of the words
+dim_word = 300
+# dimension of the characters
+dim_char = 100
 # path to the embeddings that are used
 filename_embeddings = ./embeddings/wiki.de.bin
 # path where the embeddings defined by train/dev/test are written to
@@ -246,6 +249,7 @@ python3 test.py model_germeval/config corpora/GermEval/NER-de-test.tsv.conv
 
 ## Transfer Learning to another dataset
 
+For performing the transfer learning you first need to train a model e.g. based on the GermEval data as described [here](#train-a-new-model). Be aware, that 
 
 ## Test a Model
 
