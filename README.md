@@ -112,6 +112,7 @@ erstellt erstellt KNOWN erstellt O
 We provide the best performing model for the following datasets:
 
 | Name| Language | Description| Download| 
+|-----|----------|------------|---------|
 | CoNLL 2003 | German | NER dataset based on Newspaper | [link](https://www.clips.uantwerpen.be/conll2003/ner/)
 | GermEval 2014 | German | NER dataset based on Wikipedia | [link](https://sites.google.com/site/germeval2014ner/)|
 | ONB| German |NER dataset based on texts of the Austrian National Library from 1710 and 1873 |[link](http://github.com/KBNLresearch/europeananp-ner/)|
@@ -125,7 +126,7 @@ All provided models are trained using transfer learning techniques. The models a
 The models can be downloaded as described in the table. The models should be stored directly on the project directory. Furthermore, they need to be uncompressed (*tar xfvz \*tar.gz *)
 
 |  Optimized for | Trained | Transfer Learning |Embeddings| Download|
-|----------------|------------|---------|
+|----------------|------------|---------|-----|------|
 | GermEval 2014 | CoNLL2003| GermEval 2014 | |German Wikipedia|[link](http://www2.ims.uni-stuttgart.de/data/ner_de/models/model_transfer_learning_conll2003_germeval_emb_wiki.tar.gz) |
 | CoNLL 2003 (German) | GermEval 2014 | CoNLL 2003 | German Wikipedia|[link](http://www2.ims.uni-stuttgart.de/data/ner_de/models/model_transfer_learning_conll2003_germeval_emb_wiki.tar.gz) |
 | ONB | GermEval 2014 | ONB | German Europeana |  [link](http://www2.ims.uni-stuttgart.de/data/ner_de/models/model_transfer_learning_germeval_onb_emb_euro.tar.gz) |
