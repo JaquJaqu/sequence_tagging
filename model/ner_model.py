@@ -415,16 +415,8 @@ class NERModel(BaseModel):
 
         return {"acc": 100*acc, "f1": 100*f1}
     
-    def process_test(self,words,words_idx,labels):
-        if len(words)==0:
-            return
-        labels_pred, sequence_lengths = self.predict_batch(words_idx)
-        for lab, lab_predict,word in zip(labels,labels_pred, words):
-            
-            lab = idx2tag[lab[i]]
-        
     
-    def predict_test(self,test):
+    def predict_test(self,test,separate = "\t"):
         
         #idx2word = load_vocab_rev(self.config.filename_words)
         idx2tag  = load_vocab_rev(self.config.filename_tags)
@@ -433,21 +425,21 @@ class NERModel(BaseModel):
          
         for words, labels in minibatches(test, self.config.batch_size):
             labels_pred, sequence_lengths = self.predict_batch(words)
-   
+        
         for lab, lab_pred, length, word in zip(labels, labels_pred, sequence_lengths, words):
                 if self.config.use_chars:
                     for i in range(len(word[1])):
 
                         we = word[1][i]
                         unk = we.unknown.name
-                        w = we.word+" "+we.processed_word+" "+unk
+                        w = we.word+" "+we.processed_word+separate+unk
                         t = "O"
                         
                         t = lab[i]
                         t2 = "O"
                         if lab_pred[i] in idx2tag:
                             t2=idx2tag[lab_pred[i]]
-                        print(w+" "+t+" "+t2)
+                        print(w+separate+t+separate+t2)
                 else:
                     for i in range(len(word)):
                         we = word[i]
@@ -459,7 +451,7 @@ class NERModel(BaseModel):
                         t2 = "O"
                         if lab_pred[i] in idx2tag:
                             t2=idx2tag[lab_pred[i]]
-                        print(w+" "+t+" "+t2)
+                        print(w+separate+t+separate+t2)
                 print("")
                 
 

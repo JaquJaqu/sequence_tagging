@@ -22,9 +22,11 @@ Table of Content
  - [Machine Learning Model](#machine-learning-model)
  - [Requirements](#requirements)
  - [Run an Existing Model](#run-an-existing-model)
-   * [Download computed models](#download-computed-models)
+   * [Download omputed models](#download-computed-models)
    * [Download Embeddings](#download-embeddings) 
-- [Train a New Model](#train-a-new-model)
+   * [Automatic Download](#automatic-download)
+   * [Example for a precomputed model](#example-for-a-precomputed-model)
+ - [Train a New Model](#train-a-new-model)
  - [Citation](#citation)
  - [License](#license)
   
@@ -57,9 +59,103 @@ The model is similar to [Lample et al.](https://arxiv.org/abs/1603.01360) and [M
 
 ## Run an Existing Model
 
+To run pre-computed models, you need to download the model and the embeddings. This can be done automatically with a python script as described [here](#automatic-download). However, the models and the embeddings can also be downloaded manually as described in the next two sections.
+
 ### Download computed models
 
+We provide the best performing model for each dataset. For an automatic download follow the description [here](#automatic-download). All models have been trained using transfer learning techniques. To use the models they have to be uncompresser (tar xfvz *tar.gz)
+
+|  Optimized for | Trained | Transfer Learning |Embeddings| Download|
+|----------------|------------|---------|
+| GermEval 2014 | CoNLL2003| GermEval 2014 | |German Wikipedia|[link](http://www2.ims.uni-stuttgart.de/data/ner_de/models/model_transfer_learning_conll2003_germeval_emb_wiki.tar.gz) |
+| CoNLL 2003 (German) | GermEval 2014 | CoNLL 2003 | German Wikipedia|[link](http://www2.ims.uni-stuttgart.de/data/ner_de/models/model_transfer_learning_conll2003_germeval_emb_wiki.tar.gz) |
+| ONB | GermEval 2014 | ONB | German Europeana |  [link](http://www2.ims.uni-stuttgart.de/data/ner_de/models/model_transfer_learning_germeval_onb_emb_euro.tar.gz) |
+| LFT | GermEval 2014 | LFT | German Wikipedia | [link](http://www2.ims.uni-stuttgart.de/data/ner_de/models/model_transfer_learning_germeval_lft_emb_wiki.tar.gz) |
+
+
+
+
+
 ### Download Embeddings
+
+The German embeddings can be downloaded here. We provide the full embeddings (named Complete) and the filtered embeddings, which only contain the vocabulary of the data of the task. These filtered models have also been used to train the pre-computed models. 
+
+| Name | Computed on | Dimensions | Complete  | Filtered|
+|------|-------------|------------|-----------|---------|
+| Wiki | German Wikipedia | 300   | [link](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.de.zip)  |  [link](http://www2.ims.uni-stuttgart.de/data/ner_de//embeddings/fasttext.wiki.de.bin.trimmed.npz)|
+| Euro | German Europeana | 300   |  [link](http://www2.ims.uni-stuttgart.de/data/ner_de//embeddings/fasttext.german.europeana.skip.300.bin) | [link](http://www2.ims.uni-stuttgart.de/data/ner_de//embeddings/fasttext.german.europeana.skip.300.bin.trimmed.npz) |
+
+### Automatic Download
+
+Using the python script *download_model_embeddings.py* the models and the embeddings can be donwloaded automatically. You can choose between the several options:
+
+'''
+~ user$ python3 download_model_embeddings.py 
+
+No download option has been specified:
+python download_model_embeddings.py options
+
+Following download options are possible:
+all         download all models and embeddings
+all_models  download all models
+all_embed   download all embeddings
+GermEval	download best model and embeddings for GermEval
+CONLL2003	download best model and embeddings for CONLL2003
+ONB		    download best model and embeddings for ONB
+LFT		    download best model and embeddings for LFT
+
+'''
+
+Using this script models and embeddings are also uncompressed. 
+
+
+### Example for a precomputed model
+
+We will give an example for using the best GermEval model (including downloading the models).
+First, we need to download the project, the model and the embeddings:
+
+'''
+git clone git@github.com:riedlma/sequence_tagging.git
+cd sequence_tagging
+python3 download_model_embeddings.py GermEval
+'''
+
+Now, you can create a new file (called test.conll) that should be in CoNLL format and might contain the following content:
+
+'''
+This
+example
+was
+created
+by
+Martin
+Riedl
+in
+Stuttgart
+.
+''' 
+
+To start the entity tagging, you run the following command:
+
+'''
+python3 test.py model_transfer_learning_conll2003_germeval_emb_wiki/config test.conll 
+'''
+
+The output should be as following:
+
+'''
+Diese diese KNOWN Diese O
+Beispiel beispiel KNOWN Beispiel O
+wurde wurde KNOWN wurde O
+von von KNOWN von O
+Martin martin KNOWN Martin B-PER
+Riedl riedl KNOWN Riedl I-PER
+in in KNOWN in O
+Stuttgart stuttgart KNOWN Stuttgart B-LOC
+erstellt erstellt KNOWN erstellt O
+. . KNOWN . O
+'''
+
 
 
 ## Train a New Model
