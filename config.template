@@ -1,0 +1,57 @@
+[PATH]
+#path where the model will be written to
+dir_model_output = TODO
+dir_vocab_output = %(dir_model_output)s
+dir_model = %(dir_model_output)s/model.weights/
+path_log = %(dir_model_output)s/test.log
+
+
+filename_train = TODO
+filename_dev =   TODO
+filename_test =  TODO
+
+# these are the output paths for the vocabulary, the 
+# tagsets and the characters used in the train/dev/test set
+filename_words = %(dir_vocab_output)s/words.txt
+filename_tags = %(dir_vocab_output)s/tags.txt
+filename_chars = %(dir_vocab_output)s/chars.txt
+
+[EMBEDDINGS]
+# dimension of the words
+dim_word = 300
+# dimension of the characters
+dim_char = 100
+# path to the embeddings that are used 
+filename_embeddings = TODO
+# path where the embeddings defined by train/dev/test are written to
+filename_embeddings_trimmed = TODO 
+# models can also be trained with random embeddings that are 
+# adjusted during training
+use_pretrained = True
+# currently we support: fasttext, glove and w2v
+embedding_type = fasttext
+# if using embeddings larger than 2GB this option needs to be switched on
+use_large_embeddings = False
+# number of embeddings that are dynamically changed during testing
+oov_size = 0
+
+
+# here, several parametesr of the machine learning and pre-processing
+# can be changed
+[PARAM]
+lowercase = True
+max_iter = None
+train_embeddings = False
+nepochs = 15
+dropout = 0.5
+batch_size = 20
+lr_method = adam
+lr = 0.001
+lr_decay = 0.9
+clip = -1
+nepoch_no_imprv = 3
+hidden_size_char = 100
+hidden_size_lstm = 300
+use_crf = True
+use_chars = True
+

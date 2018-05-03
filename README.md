@@ -1,5 +1,7 @@
 # Named Entity Recognition with Tensorflow
 
+
+
 This repository contains a NER implementation using Tensorflow (based on BiLSTM + CRF and character embeddings) that is based on the implementation by [Guillaume Genthial](https://github.com/guillaumegenthial/sequence_tagging). We have modified this implementation including its documentation. The major changes are listed below:
 
 
@@ -12,6 +14,7 @@ Mainly, we have done the following changes:
 - support to load all embeddings of a model
 - support to dynamically load OOV embeddings during testing
 
+Currently, we only provide models for contemporary German and historic German texts.
 
 
 Table of Content
@@ -58,7 +61,7 @@ The model is similar to [Lample et al.](https://arxiv.org/abs/1603.01360) and [M
 
 ## Run an Existing Model
 
-To run pre-computed models, you need to download the model and the embeddings. This can be done automatically with a python script as described [here](#automatic-download). However, the models and the embeddings can also be downloaded manually as described [here](#manual-download).
+To run pre-computed models, you need to install the [required python packages](#requirements) and you need to download the model and the embeddings. This can be done automatically with a python script as described [here](#automatic-download). However, the models and the embeddings can also be downloaded manually as described [here](#manual-download).
 
 
 Here, we will fully describe, how to apply the best performing GermEval model to a new file.
@@ -164,10 +167,61 @@ LFT		    download best model and embeddings for LFT
 
 ## Train a New Model
 
+We will describe how a new model can be trained and show examples based on the GermEval 2014 dataset. In order to build the model, we first need to download the training data. In addition, we filter comments and only leave the word and the tags.
+
+```
+mkdir -p corpora/GermEval
+wget -O corpora/GermEval/NER-de-train.tsv  https://sites.google.com/site/germeval2014ner/data/NER-de-train.tsv
+wget -O corpora/GermEval/NER-de-dev.tsv  https://sites.google.com/site/germeval2014ner/data/NER-de-dev.tsv
+wget -O corpora/GermEval/NER-de-test.tsv  https://sites.google.com/site/germeval2014ner/data/NER-de-test.tsv
+cat corpora/GermEval/NER-de-train.tsv  | grep -v "^[#]" | cut -f2,3 > corpora/GermEval/NER-de-train.tsv.conv
+cat corpora/GermEval/NER-de-test.tsv  | grep -v "^[#]" | cut -f2,3 > corpora/GermEval/NER-de-test.tsv.conv
+cat corpora/GermEval/NER-de-dev.tsv  | grep -v "^[#]" | cut -f2,3 > corpora/GermEval/NER-de-dev.tsv.conv
+```
+
+Next, the configuration has to be specified. First, we create a directory where the model will be stored:
+
+```
+mkdir model_germeval
+```
+
+Then, we need to create and adjust a configuration file. For this, we can use the configuration template ( [config.template](https://github.com/riedlma/sequence_tagging/blob/master/config.template)) and copy it to the model folder:
+
+``` 
+cp config.template model_germeval
+```
+
+Additionally, all parameters that have as value *TODO* need to be adjusted. Using the current setting, we adjust following parametesr:
+
+```
+[PATH]
+#path where the model will be written to
+dir_model_output = model_germeval
+
+...
+filename_train = corpora/GermEval/NER-de-train.tsv.conv 
+filename_dev =   corpora/GermEval/NER-de-dev.tsv.conv 
+filename_test =  corpora/GermEval/NER-de-test.tsv.conv 
+
+... 
+
+[EMBEDDINGS]
+...
+# path to the embeddings that are used
+filename_embeddings = TODO
+# path where the embeddings defined by train/dev/test are written to
+filename_embeddings_trimmed = TODO
+...
+
+```
 
 
+## Transfer Learning to another dataset
 
-##Requirements
+
+## Test a Model
+
+## Requirements
 
 
 To run the sourcecode you need to install the requirements from the [file](https://github.com/riedlma/sequence_tagging/blob/master/requirements.txt).
