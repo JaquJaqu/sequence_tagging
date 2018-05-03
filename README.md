@@ -30,7 +30,7 @@ Table of Content
    * [Automatic Download](#automatic-download)
  - [Train a New Model](#train-a-new-model)
  - [Transfer Learning](#transfer-learning)
- - [Test a Model](#test-a-model)
+ - [Predict Labels for New Text](#predict-labels-for-new-text)
  - [Parameters in the Configuration File](#parameters-in-the-configuration-file)
  - [Requirements](#requirements) 
  - [Citation](#citation)
@@ -163,7 +163,7 @@ all            download all models and embeddings
 all_models     download all models
 all_embed      download all embeddings
 GermEval       download best model and embeddings for GermEval
-CONLL2003      download best model and embeddings for CONLL2003
+CONLL2003      download best model and embeddings for CoNLL 2003
 ONB            download best model and embeddings for ONB
 LFT            download best model and embeddings for LFT
 
@@ -172,7 +172,7 @@ LFT            download best model and embeddings for LFT
 
 ## Train a New Model
 
-We will describe how a new model can be trained and describe it based on training a model on the GermEval 2014 dataset. First, we need to download the training data. For training a model, we expect files to have two columns with the first column specifying the word and the second column containing the label.
+We will describe how a new model can be trained and describe it based on training a model on the GermEval 2014 dataset using pre-computed word embeddings from German Wikipedia. First, we need to download the training data. For training a model, we expect files to have two columns with the first column specifying the word and the second column containing the label.
 
 ```
 mkdir -p corpora/GermEval
@@ -184,14 +184,16 @@ cat corpora/GermEval/NER-de-test.tsv  | grep -v "^[#]" | cut -f2,3 > corpora/Ger
 cat corpora/GermEval/NER-de-dev.tsv  | grep -v "^[#]" | cut -f2,3 > corpora/GermEval/NER-de-dev.tsv.conv
 ```
 
-In addition, we need to download the embeddings:
+
+For the training we use the German Wikipedia embeddings from the Facebook Research group. These (and all other embeddings) can be downloaded with the following command:
 
 ```
 python3 download_model_embeddings.py all_models
 ```
 
+If you want to train on a different language, you can also check if there are pre-computed embeddings available [here](https://github.com/facebookresearch/fastText/blob/master/pretrained-vectors.md). To compute new embeddings you can follow the [manual from fastText](https://github.com/facebookresearch/fastText).
 
-Next, the configuration has to be specified. First, we create a directory where the model will be stored:
+Next, the configuration needs to be edited. First, we create a directory where the model will be stored:
 
 ```
 mkdir model_germeval
@@ -275,7 +277,7 @@ python transfer_learning.py configuration transfer_training.conll transfer_dev.c
 After the training, new text files in the domain of the transfer learning files as described [here](#test-a-model).
 
 
-## Test a Model
+## Predict Labels for New Text
 
 To test a model, the *test.py* script is used and expects, the configuration file of the model and the test file
 
@@ -285,7 +287,7 @@ python3 test.py model_configuration test_set
 
 ## Parameters in the Configuration File
 
-The configuration file is divided in three sections. The section PATH contains all variables that specify the locations of the model and labeled data. The EMBEDDINGS section contains all parameters for the word embeddings and the PARAM section contains all further parameters for the machine learning as well as pre-processing.
+The configuration file is divided in three sections. The section *PATH* contains all variables that specify the locations of the model and labeled data. The *EMBEDDINGS* section contains all parameters for the word embeddings and the *PARAM* section contains all further parameters for the machine learning as well as pre-processing.
 
 ```
 [PATH]
