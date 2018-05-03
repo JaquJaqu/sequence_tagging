@@ -4,7 +4,7 @@ import tensorflow as tf
 
 
 from .data_utils import minibatches, pad_sequences, get_chunks,get_oov_embeddings
-from .data_utils import load_vocab_rev
+from .data_utils import load_vocab_rev, load_vocab
 from .general_utils import Progbar
 from .base_model import BaseModel
 
@@ -338,7 +338,6 @@ class NERModel(BaseModel):
 
         else:
             labels_pred = sess.run(self.labels_pred, feed_dict=fd)
-
             return labels_pred, sequence_lengths
 
 
@@ -420,6 +419,7 @@ class NERModel(BaseModel):
         
         #idx2word = load_vocab_rev(self.config.filename_words)
         idx2tag  = load_vocab_rev(self.config.filename_tags)
+        tag2idx  = load_vocab(self.config.filename_tags)
         
                 
          
@@ -439,7 +439,10 @@ class NERModel(BaseModel):
                         t2 = "O"
                         if lab_pred[i] in idx2tag:
                             t2=idx2tag[lab_pred[i]]
-                        print(w+separate+t+separate+t2)
+                        if t in tag2idx:
+                            print(w+separate+t+separate+t2)
+                        else:
+                            print(w+separate+t2)
                 else:
                     for i in range(len(word)):
                         we = word[i]
@@ -451,7 +454,10 @@ class NERModel(BaseModel):
                         t2 = "O"
                         if lab_pred[i] in idx2tag:
                             t2=idx2tag[lab_pred[i]]
-                        print(w+separate+t+separate+t2)
+                        if t in tag2idx:
+                            print(w+separate+t+separate+t2)
+                        else:
+                            print(w+separate+t2)
                 print("")
                 
 
