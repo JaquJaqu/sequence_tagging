@@ -24,14 +24,15 @@ embeddings["Europeana"] =["fasttext.german.europeana.skip.300.bin.trimmed.npz","
 
 
 def print_options():
+    pad = 15
     print ("python %s options"%(sys.argv[0]))
     print ("\nFollowing download options are possible:")
-    print ("all         download all models and embeddings")
-    print ("all_models  download all models")
-    print ("all_embed   download all embeddings")
+    print ("all".ljust(pad)+"download all models and embeddings")
+    print ("all_models".ljust(pad)+"download all models")
+    print ("all_embed".ljust(pad)+"download all embeddings")
 
     for t in types:
-        print (t+"\t\tdownload best model and embeddings for "+t)
+        print (t.ljust(pad)+"download best model and embeddings for "+t)
     sys.exit(0)   
 
 def uncompress(f,folder):

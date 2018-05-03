@@ -118,7 +118,7 @@ erstellt erstellt KNOWN erstellt O
 ## Download Models and Embeddings
 We provide the best performing model for the following datasets:
 
-| Name| Language | Description| Download| 
+| Name| Language | Description| Webpage| 
 |-----|----------|------------|---------|
 | CoNLL 2003 | German | NER dataset based on Newspaper | [link](https://www.clips.uantwerpen.be/conll2003/ner/)
 | GermEval 2014 | German | NER dataset based on Wikipedia | [link](https://sites.google.com/site/germeval2014ner/)|
@@ -158,13 +158,13 @@ No download option has been specified:
 python download_model_embeddings.py options
 
 Following download options are possible:
-all         download all models and embeddings
-all_models  download all models
-all_embed   download all embeddings
-GermEval	download best model and embeddings for GermEval
-CONLL2003	download best model and embeddings for CONLL2003
-ONB		    download best model and embeddings for ONB
-LFT		    download best model and embeddings for LFT
+all            download all models and embeddings
+all_models     download all models
+all_embed      download all embeddings
+GermEval       download best model and embeddings for GermEval
+CONLL2003      download best model and embeddings for CONLL2003
+ONB            download best model and embeddings for ONB
+LFT            download best model and embeddings for LFT
 
 ```
 
