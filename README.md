@@ -101,17 +101,18 @@ python3 test.py model_transfer_learning_conll2003_germeval_emb_wiki/config test.
 The output should be as following:
 
 ```
-Diese diese KNOWN Diese O
-Beispiel beispiel KNOWN Beispiel O
-wurde wurde KNOWN wurde O
-von von KNOWN von O
-Martin martin KNOWN Martin B-PER
-Riedl riedl KNOWN Riedl I-PER
-in in KNOWN in O
-Stuttgart stuttgart KNOWN Stuttgart B-LOC
-erstellt erstellt KNOWN erstellt O
-. . KNOWN . O
+Diese diese	KNOWN	O
+Beispiel beispiel	KNOWN	O
+wurde wurde	KNOWN	O
+von von	KNOWN	O
+Martin martin	KNOWN	B-PER
+Riedl riedl	KNOWN	I-PER
+in in	KNOWN	O
+Stuttgart stuttgart	KNOWN	B-LOC
+erstellt erstellt	KNOWN	O
+. .	KNOWN	O
 ```
+The first column is the input word, the second column specifies the pre-processed word (here lowercased). The third column contains a flag, whether the word has been known during training (KNOWN) or not (UNKNOWN). If labels are assigned to the input file they will be in the third column. Otherwise, they will not be contained. The last column contains the predicted tags.
 
 
 
@@ -140,7 +141,7 @@ The models can be downloaded as described in the table. The models should be sto
 | LFT | GermEval 2014 | LFT | German Wikipedia | [link](http://www2.ims.uni-stuttgart.de/data/ner_de/models/model_transfer_learning_germeval_lft_emb_wiki.tar.gz) |
 
 The embeddings should best be stored in the folder *embeddings* inside the project folder.
-We provide the full embeddings (named Complete) and the filtered embeddings, which only contain the vocabulary of the data of the task. These filtered models have also been used to train the pre-computed models. 
+We provide the full embeddings (named Complete) and the filtered embeddings, which only contain the vocabulary of the data of the task. These filtered models have also been used to train the pre-computed models. The German Wikipedia model is provided by [Facebook Research](http://github.com/facebookresearch/fastText/blob/master/pretrained-vectors.md).
 
 | Name | Computed on | Dimensions | Complete  | Filtered|
 |------|-------------|------------|-----------|---------|
