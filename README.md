@@ -89,7 +89,7 @@ The German embeddings can be downloaded here. We provide the full embeddings (na
 
 Using the python script *download_model_embeddings.py* the models and the embeddings can be donwloaded automatically. You can choose between the several options:
 
-'''
+```
 ~ user$ python3 download_model_embeddings.py 
 
 No download option has been specified:
@@ -104,7 +104,7 @@ CONLL2003	download best model and embeddings for CONLL2003
 ONB		    download best model and embeddings for ONB
 LFT		    download best model and embeddings for LFT
 
-'''
+```
 
 Using this script models and embeddings are also uncompressed. 
 
@@ -114,15 +114,15 @@ Using this script models and embeddings are also uncompressed.
 We will give an example for using the best GermEval model (including downloading the models).
 First, we need to download the project, the model and the embeddings:
 
-'''
+```
 git clone git@github.com:riedlma/sequence_tagging.git
 cd sequence_tagging
 python3 download_model_embeddings.py GermEval
-'''
+```
 
 Now, you can create a new file (called test.conll) that should be in CoNLL format and might contain the following content:
 
-'''
+```
 This
 example
 was
@@ -133,17 +133,17 @@ Riedl
 in
 Stuttgart
 .
-''' 
+``` 
 
 To start the entity tagging, you run the following command:
 
-'''
+```
 python3 test.py model_transfer_learning_conll2003_germeval_emb_wiki/config test.conll 
-'''
+```
 
 The output should be as following:
 
-'''
+```
 Diese diese KNOWN Diese O
 Beispiel beispiel KNOWN Beispiel O
 wurde wurde KNOWN wurde O
@@ -154,7 +154,7 @@ in in KNOWN in O
 Stuttgart stuttgart KNOWN Stuttgart B-LOC
 erstellt erstellt KNOWN erstellt O
 . . KNOWN . O
-'''
+```
 
 
 
