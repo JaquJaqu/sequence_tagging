@@ -16,6 +16,8 @@ types["CONLL2003"]=["Wiki","model_transfer_learning_germeval_conll2003_emb_wiki.
 types["ONB"]=["Europeana","model_transfer_learning_germeval_onb_emb_euro.tar.gz"]
 types["LFT"]=["Wiki","model_transfer_learning_germeval_lft_emb_wiki.tar.gz"]
 
+
+
 embeddings={}
 embeddings["Wiki"]=["fasttext.wiki.de.bin.trimmed.npz","https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.de.zip"]
 embeddings["Europeana"] =["fasttext.german.europeana.skip.300.bin.trimmed.npz","fasttext.german.europeana.skip.300.bin"]
@@ -46,6 +48,18 @@ def uncompress(f,folder):
     elif f.endswith("gz"):
         print("ungz")
 
+def reporthook(blocknum, blocksize, totalsize):
+    readsofar = blocknum * blocksize
+    if totalsize > 0:
+        percent = readsofar * 1e2 / totalsize
+        s = "\r%5.1f%% %*d / %d" % (
+            percent, len(str(totalsize)), readsofar, totalsize)
+        sys.stderr.write(s)
+        if readsofar >= totalsize: # near the end
+            sys.stderr.write("\n")
+    else: # total size is unknown
+        sys.stderr.write("read %d\n" % (readsofar,))
+
 def download(name,f,folder,dest_folder):
     if len(f)==0:
         return
@@ -58,7 +72,7 @@ def download(name,f,folder,dest_folder):
         print("File already exists (%s)"%(dest)) 
         return
     print("Download %s (%s)"%(name,f))
-    urllib.request.urlretrieve(f,dest)
+    urllib.request.urlretrieve(f,dest,reporthook)
     uncompress(dest,dest_folder)    
 
 if len(sys.argv)<2:

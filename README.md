@@ -179,6 +179,13 @@ cat corpora/GermEval/NER-de-test.tsv  | grep -v "^[#]" | cut -f2,3 > corpora/Ger
 cat corpora/GermEval/NER-de-dev.tsv  | grep -v "^[#]" | cut -f2,3 > corpora/GermEval/NER-de-dev.tsv.conv
 ```
 
+In addition, you need to download the embeddings:
+
+```
+python3 download_model_embeddings.py all_models
+```
+
+
 Next, the configuration has to be specified. First, we create a directory where the model will be stored:
 
 ```
@@ -191,7 +198,7 @@ Then, we need to create and adjust a configuration file. For this, we can use th
 cp config.template model_germeval
 ```
 
-Additionally, all parameters that have as value *TODO* need to be adjusted. Using the current setting, we adjust following parametesr:
+Additionally, all parameters that have as value *TODO* need to be adjusted. Using the current setting, we adjust following parameters:
 
 ```
 [PATH]
@@ -202,7 +209,6 @@ dir_model_output = model_germeval
 filename_train = corpora/GermEval/NER-de-train.tsv.conv 
 filename_dev =   corpora/GermEval/NER-de-dev.tsv.conv 
 filename_test =  corpora/GermEval/NER-de-test.tsv.conv 
-
 ... 
 
 [EMBEDDINGS]
@@ -215,11 +221,38 @@ filename_embeddings_trimmed = TODO
 
 ```
 
+Before we train the model, we build a matrix of the embeddings that are contained in the train/dev/test in addition to the vocabulary, with the *build_vocab.py* script:
+
+```
+python3 build_vocab.py model_germeval/config
+```
+
+If you want to apply the model to other vocabulary then the one specified in train/dev/test, the model will not have any word representation and will mainly rely on the character word embedding. To prevent this, the easiest way is to add them to either the test or dev set file.
+
+After that step, the new model can be trained, using the following command: 
+
+```
+python3 train.py model_germeval/config
+```
+
+The model can be applied to e.g. the test file as follows:
+
+```
+python3 test.py model_germeval/config corpora/GermEval/NER-de-test.tsv.conv
+```
+
+
 
 ## Transfer Learning to another dataset
 
 
 ## Test a Model
+
+To test a model, the *test.py* script is used and expects, the configuration file of the model and the test file
+
+``` 
+python3 test.py model_configuration test_set
+```
 
 ## Requirements
 
