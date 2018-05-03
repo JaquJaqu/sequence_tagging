@@ -29,6 +29,7 @@ Table of Content
    * [Manual Download](#manual-download)
    * [Automatic Download](#automatic-download)
  - [Train a New Model](#train-a-new-model)
+ - [Parameters in the Configuration File](#parameters-in-the-configuration-file) 
  - [Citation](#citation)
  - [License](#license)
   
@@ -167,7 +168,7 @@ LFT		    download best model and embeddings for LFT
 
 ## Train a New Model
 
-We will describe how a new model can be trained and show examples based on the GermEval 2014 dataset. In order to build the model, we first need to download the training data. In addition, we filter comments and only leave the word and the tags.
+We will describe how a new model can be trained and describe it based on training a model on the GermEval 2014 dataset. First, we need to download the training data. For training a model, we expect files to have two columns with the first column specifying the word and the second column containing the label.
 
 ```
 mkdir -p corpora/GermEval
@@ -179,7 +180,7 @@ cat corpora/GermEval/NER-de-test.tsv  | grep -v "^[#]" | cut -f2,3 > corpora/Ger
 cat corpora/GermEval/NER-de-dev.tsv  | grep -v "^[#]" | cut -f2,3 > corpora/GermEval/NER-de-dev.tsv.conv
 ```
 
-In addition, you need to download the embeddings:
+In addition, we need to download the embeddings:
 
 ```
 python3 download_model_embeddings.py all_models
@@ -192,13 +193,13 @@ Next, the configuration has to be specified. First, we create a directory where 
 mkdir model_germeval
 ```
 
-Then, we need to create and adjust a configuration file. For this, we can use the configuration template ( [config.template](https://github.com/riedlma/sequence_tagging/blob/master/config.template)) and copy it to the model folder:
+Then, we create the configuration file. For this, we use the configuration template ( [config.template](https://github.com/riedlma/sequence_tagging/blob/master/config.template)) and copy it to the model folder:
 
 ``` 
 cp config.template model_germeval
 ```
 
-Additionally, all parameters that have as value *TODO* need to be adjusted. Using the current setting, we adjust following parameters:
+At least, all parameters that have as value *TODO* need to be adjusted. Using the current setting, we adjust following parameters (a more detailed description of the configuration is found [here](#parameters-in-the-configuration-file)):
 
 ```
 [PATH]
@@ -252,6 +253,68 @@ To test a model, the *test.py* script is used and expects, the configuration fil
 
 ``` 
 python3 test.py model_configuration test_set
+```
+
+## Parameters in the Configuration File
+
+```
+[PATH]
+#path where the model will be written to
+dir_model_output = TODO
+dir_vocab_output = %(dir_model_output)s
+dir_model = %(dir_model_output)s/model.weights/
+path_log = %(dir_model_output)s/test.log
+
+
+filename_train = TODO
+filename_dev =   TODO
+filename_test =  TODO
+
+# these are the output paths for the vocabulary, the 
+# tagsets and the characters used in the train/dev/test set
+filename_words = %(dir_vocab_output)s/words.txt
+filename_tags = %(dir_vocab_output)s/tags.txt
+filename_chars = %(dir_vocab_output)s/chars.txt
+
+[EMBEDDINGS]
+# dimension of the words
+dim_word = 300
+# dimension of the characters
+dim_char = 100
+# path to the embeddings that are used 
+filename_embeddings = TODO
+# path where the embeddings defined by train/dev/test are written to
+filename_embeddings_trimmed = TODO 
+# models can also be trained with random embeddings that are 
+# adjusted during training
+use_pretrained = True
+# currently we support: fasttext, glove and w2v
+embedding_type = fasttext
+# if using embeddings larger than 2GB this option needs to be switched on
+use_large_embeddings = False
+# number of embeddings that are dynamically changed during testing
+oov_size = 0
+
+
+# here, several parametesr of the machine learning and pre-processing
+# can be changed
+[PARAM]
+lowercase = True
+max_iter = None
+train_embeddings = False
+nepochs = 15
+dropout = 0.5
+batch_size = 20
+lr_method = adam
+lr = 0.001
+lr_decay = 0.9
+clip = -1
+nepoch_no_imprv = 3
+hidden_size_char = 100
+hidden_size_lstm = 300
+use_crf = True
+use_chars = True
+
 ```
 
 ## Requirements
