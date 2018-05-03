@@ -73,15 +73,15 @@ python3 download_model_embeddings.py GermEval
 Now, you can create a new file (called test.conll) that should be in CoNLL format and might contain the following content:
 
 ```
-This
-example
-was
-created
-by
+Diese 
+Beispiel
+wurde
+von
 Martin
 Riedl
 in
-Stuttgart
+Stuttgart 
+erstellt
 .
 ``` 
 
@@ -123,7 +123,7 @@ All provided models are trained using transfer learning techniques. The models a
 
 ### Manual Download
 
-The models can be downloaded as described in the table. The models should be stored directly on the project directory. Furthermore, they need to be uncompressed (*tar xfvz \*tar.gz *)
+The models can be downloaded as described in the table. The models should be stored directly on the project directory. Furthermore, they need to be uncompressed (tar xfvz \*tar.gz)
 
 |  Optimized for | Trained | Transfer Learning |Embeddings| Download|
 |----------------|------------|---------|-----|------|
