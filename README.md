@@ -62,6 +62,24 @@ The model is similar to [Lample et al.](https://arxiv.org/abs/1603.01360) and [M
 - run a bi-lstm on each sentence to extract contextual representation of each word
 - decode with a linear chain CRF
 
+## Requirements
+
+
+To run the python code, you need python3 and the requirements from the following [file](https://github.com/riedlma/sequence_tagging/blob/master/requirements.txt) which can be easily installed:
+
+```
+pip3 install -r requirements.txt
+```
+
+In addition, you need to build fastText manually, as described [here](https://github.com/facebookresearch/fastText/tree/master/python), which are the following commands:
+
+```
+git clone https://github.com/facebookresearch/fastText.git
+cd fastText
+pip3 install .
+```
+
+
 
 ## Run an Existing Model
 
@@ -77,7 +95,7 @@ cd sequence_tagging
 python3 download_model_embeddings.py GermEval
 ```
 
-Now, you can create a new file (called test.conll) that should be in CoNLL format and might contain the following content:
+Now, you can create a new file (called test.conll) that should contain one token per line and might contain the following content:
 
 ```
 Diese 
@@ -348,12 +366,6 @@ use_crf = True
 use_chars = True
 
 ```
-
-## Requirements
-
-
-To run the sourcecode you need to install the requirements from the [file](https://github.com/riedlma/sequence_tagging/blob/master/requirements.txt).
-In addition, you need to build fastText manually, as described [here](https://github.com/facebookresearch/fastText/tree/master/python).
 
 
 
