@@ -197,9 +197,9 @@ mkdir -p corpora/GermEval
 wget -O corpora/GermEval/NER-de-train.tsv  https://sites.google.com/site/germeval2014ner/data/NER-de-train.tsv
 wget -O corpora/GermEval/NER-de-dev.tsv  https://sites.google.com/site/germeval2014ner/data/NER-de-dev.tsv
 wget -O corpora/GermEval/NER-de-test.tsv  https://sites.google.com/site/germeval2014ner/data/NER-de-test.tsv
-cat corpora/GermEval/NER-de-train.tsv  | grep -v "^[#]" | cut -f2,3 > corpora/GermEval/NER-de-train.tsv.conv
-cat corpora/GermEval/NER-de-test.tsv  | grep -v "^[#]" | cut -f2,3 > corpora/GermEval/NER-de-test.tsv.conv
-cat corpora/GermEval/NER-de-dev.tsv  | grep -v "^[#]" | cut -f2,3 > corpora/GermEval/NER-de-dev.tsv.conv
+cat corpora/GermEval/NER-de-train.tsv  | grep -v "^[#]" | cut -f2,3 |  sed "s/[^ \t]\+\(deriv\|part\)$/O/g" > corpora/GermEval/NER-de-train.tsv.conv
+cat corpora/GermEval/NER-de-test.tsv  | grep -v "^[#]" | cut -f2,3 |  sed "s/[^ \t]\+\(deriv\|part\)$/O/g" > corpora/GermEval/NER-de-test.tsv.conv
+cat corpora/GermEval/NER-de-dev.tsv  | grep -v "^[#]" | cut -f2,3|  sed "s/[^ \t]\+\(deriv\|part\)$/O/g" > corpora/GermEval/NER-de-dev.tsv.conv
 ```
 
 
