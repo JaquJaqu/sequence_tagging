@@ -432,7 +432,7 @@ class NERModel(BaseModel):
 
                         we = word[1][i]
                         unk = we.unknown.name
-                        w = we.word+" "+we.processed_word+separate+unk
+                        w = we.word+separate+we.processed_word+separate+unk
                         t = "O"
                         
                         t = lab[i]
@@ -447,7 +447,7 @@ class NERModel(BaseModel):
                     for i in range(len(word)):
                         we = word[i]
                         unk = we.unknown.name
-                        w = we.word+" "+we.processed_word+" "+unk
+                        w = we.word+separate+we.processed_word+separate+unk
                         t = "O"
                         
                         t = lab[i]
