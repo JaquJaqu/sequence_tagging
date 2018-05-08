@@ -242,9 +242,12 @@ def load_vocab_rev(filename):
 
 
 def get_oov_embeddings(config):
+    if config.oov_size==0:
+        return
     if not config.embedding_type == "fasttext":
         sys.stderr.write("OOV replacement only works with fasttext!\n")
         sys.exit(0)
+    
     model = fastText.load_model(config.filename_embeddings)
     oov_embeddings = np.zeros((config.oov_size,config.dim_word))
     
