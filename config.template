@@ -39,10 +39,16 @@ oov_size = 0
 # here, several parametesr of the machine learning and pre-processing
 # can be changed
 [PARAM]
+# lowercase all tokens
 lowercase = True
+# specify maximal number of iterations
 max_iter = None
+# specify if embeddings are dynamically trained or stay fixed
 train_embeddings = False
+# number of maximal epochs. If no improvement is achieved
+# the training sdtops
 nepochs = 15
+# dropout factor (0.5 seems to be a standard value)
 dropout = 0.5
 batch_size = 20
 lr_method = adam
