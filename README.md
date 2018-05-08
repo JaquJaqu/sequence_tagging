@@ -249,16 +249,16 @@ filename_embeddings_trimmed = ./embeddings/wiki.de.bin.trimmed.npz
 
 ```
 
-Before we train the model, we build a matrix of the embeddings that are contained in the train/dev/test in addition to the vocabulary, with the *build_vocab.py* script:
+Before we train the model, we build a matrix of the embeddings that are contained in the train/dev/test in addition to the vocabulary, with the *build_data.py* script:
 
 ```
-python3 build_vocab.py model_germeval/config
+python3 build_data.py model_germeval/config
 ```
 
-If you want to apply the model to other vocabulary then the one specified in train/dev/test, the model will not have any word representation and will mainly rely on the character word embedding. To prevent this, the easiest way is to add them in the CoNLL format as further parameters to the *build_vocab.py* script:
+If you want to apply the model to other vocabulary then the one specified in train/dev/test, the model will not have any word representation and will mainly rely on the character word embedding. To prevent this, the easiest way is to add them in the CoNLL format as further parameters to the *build_data.py* script:
 
 ```
-python3 build_vocab.py model_germeval/config vocab1.conll vocab2.conll
+python3 build_data.py model_germeval/config vocab1.conll vocab2.conll
 ```
 
 
@@ -281,7 +281,7 @@ python3 test.py model_germeval/config corpora/GermEval/NER-de-test.tsv.conv
 For performing the transfer learning you first need to train a model e.g. based on the GermEval data as described [here](#train-a-new-model). Be aware, that you added the vocabulary and the tagsets when training the basic model. The easiest way is to add them as additional parameters, when building the vocabulary, e.g.:
 
 ```
-python3 build_vocab.py model_germeval/config transfer_training.conll transfer_dev.conll test_transfer.conll
+python3 build_data.py model_germeval/config transfer_training.conll transfer_dev.conll test_transfer.conll
 ```
 
 Whereas there is not explicit parameter fitting to these words, in this way the embeddings will be available for the model. 
