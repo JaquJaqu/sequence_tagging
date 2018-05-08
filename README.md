@@ -190,7 +190,7 @@ LFT            download best model and embeddings for LFT
 
 ## Train a New Model
 
-We will describe how a new model can be trained and describe it based on training a model on the GermEval 2014 dataset using pre-computed word embeddings from German Wikipedia. First, we need to download the training data. For training a model, we expect files to have two columns with the first column specifying the word and the second column containing the label.
+We will describe how a new model can be trained and describe it based on training a model on the GermEval 2014 dataset using pre-computed word embeddings from German Wikipedia. First, we need to download the training data. For training a model, we expect files to have two columns with the first column specifying the word and the second column containing the label. 
 
 ```
 mkdir -p corpora/GermEval
@@ -203,7 +203,7 @@ cat corpora/GermEval/NER-de-dev.tsv  | grep -v "^[#]" | cut -f2,3|  sed "s/[^ \t
 ```
 
 
-For the training we use the German Wikipedia embeddings from the Facebook Research group. These (and all other embeddings) can be downloaded with the following command:
+For the training we use the German Wikipedia embeddings from the [Facebook Research group](https://github.com/facebookresearch/fastText/blob/master/pretrained-vectors.md). The embeddings can be quite large (above 10GB), especially, as the files will be decompressed. These (and all other embeddings) can be downloaded with the following command:
 
 ```
 python3 download_model_embeddings.py all_models
@@ -249,7 +249,7 @@ filename_embeddings_trimmed = ./embeddings/wiki.de.bin.trimmed.npz
 
 ```
 
-Before we train the model, we build a matrix of the embeddings that are contained in the train/dev/test in addition to the vocabulary, with the *build_data.py* script:
+Before we train the model, we build a matrix of the embeddings that are contained in the train/dev/test in addition to the vocabulary, with the *build_data.py* script. For training and testing only these smaller embeddings (specified with in the config with *filename_embeddings_trimmed*) are required. The larger ones (specified with *filename_embeddings*) can be deleted.
 
 ```
 python3 build_data.py model_germeval/config
