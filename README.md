@@ -90,7 +90,7 @@ Here, we will fully describe, how to apply the best performing GermEval model to
 First, we need to download the project, the model and the embeddings:
 
 ```
-git clone git@github.com:riedlma/sequence_tagging.git
+git clone https://github.com/riedlma/sequence_tagging
 cd sequence_tagging
 python3 download_model_embeddings.py GermEval
 ```
