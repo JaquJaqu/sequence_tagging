@@ -16,11 +16,13 @@ from model.data_utils import CoNLLDataset, get_vocabs, UNK, NUM, \
 
 if len(sys.argv)<3:
     sys.stderr.write("No arguments have been provided\n")
-    sys.stderr.write("python %s config_file test_file.conll\n"%(sys.argv[0]))    
+    sys.stderr.write("python %s config_file test_file.conll [format]\n"%(sys.argv[0]))    
     sys.exit(0)
 config_file = sys.argv[1]
 filename_test = sys.argv[2]
-
+if len(sys.argv)>3:
+    file_format = sys.argv[3]
+    
 config = Config(config_file)
 
 # build model
