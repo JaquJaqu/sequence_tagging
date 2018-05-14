@@ -23,6 +23,12 @@ trimm your word vectors.
 """.format(filename)
         super(MyIOError, self).__init__(message)
 
+
+cass FileType(Enum):
+    CONLL=1
+    TXT=2
+    SENTENCE_PER_LINE=3
+    
 class Embeddings(object):
    
         
@@ -67,7 +73,7 @@ class CoNLLDataset(object):
 
     """
     def __init__(self, filename, processing_word=None, processing_tag=None,
-                 max_iter=None):
+                 max_iter=None,file_format=FileFormat.CONLL):
         """
         Args:
             filename: path to the file
@@ -81,9 +87,9 @@ class CoNLLDataset(object):
         self.processing_tag = processing_tag
         self.max_iter = max_iter
         self.length = None
+        self.file_format = file_format
 
-
-    def __iter__(self):
+    def iter_conll(self):
         niter = 0
         with open(self.filename) as f:
             words, tags = [], []
@@ -110,6 +116,12 @@ class CoNLLDataset(object):
                     
             if len(words)>0:
                 yield words,tags
+                
+
+    def __iter__(self):
+        if self.file_format== FileFormat.CONLL:
+            self.iter_conll()
+            
     def __len__(self):
         """Iterates once over the corpus to set and store length"""
         if self.length is None:

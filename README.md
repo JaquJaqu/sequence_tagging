@@ -292,7 +292,7 @@ After the model has been trained the transfer learning step can be accomplished 
 python transfer_learning.py configuration transfer_training.conll transfer_dev.conll
 ```
 
-After the training, new text files in the domain of the transfer learning files as described [here](#test-a-model).
+After the training, new text files in the domain of the transfer learning files as described [here](#predict-labels-for-new-text).
 
 
 ## Predict Labels for New Text

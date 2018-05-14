@@ -422,11 +422,12 @@ class NERModel(BaseModel):
         tag2idx  = load_vocab(self.config.filename_tags)
         
                 
-         
+        
+        
         for words, labels in minibatches(test, self.config.batch_size):
             labels_pred, sequence_lengths = self.predict_batch(words)
         
-        for lab, lab_pred, length, word in zip(labels, labels_pred, sequence_lengths, words):
+            for lab, lab_pred, length, word in zip(labels, labels_pred, sequence_lengths, words):
                 if self.config.use_chars:
                     for i in range(len(word[1])):
 
