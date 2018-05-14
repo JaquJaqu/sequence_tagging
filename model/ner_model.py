@@ -414,8 +414,12 @@ class NERModel(BaseModel):
 
         return {"acc": 100*acc, "f1": 100*f1}
     
-    
-    def predict_test(self,test,separate = "\t"):
+    def write_output(self,text, output,write_binary):
+        if write_binary:
+            output.write(bytes(text, 'utf-8'))
+        else:
+            output.write(text)
+    def predict_test(self,test,separate = "\t", output = sys.stdout,write_binary=False):
         
         #idx2word = load_vocab_rev(self.config.filename_words)
         idx2tag  = load_vocab_rev(self.config.filename_tags)
@@ -441,9 +445,9 @@ class NERModel(BaseModel):
                         if lab_pred[i] in idx2tag:
                             t2=idx2tag[lab_pred[i]]
                         if t in tag2idx:
-                            print(w+separate+t+separate+t2)
+                            self.write_output(w+separate+t+separate+t2+"\n",output,write_binary)
                         else:
-                            print(w+separate+t2)
+                            self.write_output(w+separate+t2+"\n",output,write_binary)
                 else:
                     for i in range(len(word)):
                         we = word[i]
@@ -456,10 +460,10 @@ class NERModel(BaseModel):
                         if lab_pred[i] in idx2tag:
                             t2=idx2tag[lab_pred[i]]
                         if t in tag2idx:
-                            print(w+separate+t+separate+t2)
+                            self.write_output(w+separate+t+separate+t2+"\n",output,write_binary)
                         else:
-                            print(w+separate+t2)
-                print("")
+                            self.write_output(w+separate+t2+"\n",output,write_binary)
+                self.write_output("\n",output,write_binary)
                 
 
     def predict(self, words_raw):

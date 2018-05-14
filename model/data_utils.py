@@ -24,10 +24,15 @@ trimm your word vectors.
         super(MyIOError, self).__init__(message)
 
 
-cass FileType(Enum):
+class FileFormat(Enum):
     CONLL=1
-    TXT=2
-    SENTENCE_PER_LINE=3
+    TOKEN=2
+    TEXT=3
+
+class FileStream(Enum):
+    FILE=1
+    SYSTEM=2
+    DIRECT=3
     
 class Embeddings(object):
    
@@ -73,7 +78,7 @@ class CoNLLDataset(object):
 
     """
     def __init__(self, filename, processing_word=None, processing_tag=None,
-                 max_iter=None,file_format=FileFormat.CONLL):
+                 max_iter=None,file_format=FileFormat.CONLL,stream=FileStream.FILE):
         """
         Args:
             filename: path to the file
@@ -88,12 +93,22 @@ class CoNLLDataset(object):
         self.max_iter = max_iter
         self.length = None
         self.file_format = file_format
-
-    def iter_conll(self):
+        self.stream = stream
+        
+    
+    def __iter__(self):
+        if self.stream==FileStream.SYSTEM:
+            file_stream = sys.stdin
+        elif self.stream ==FileStream.FILE:
+            file_stream = open(self.filename)
+        else:
+            from io import StringIO
+            file_stream = StringIO(self.filename)
+            
+        words, tags=[],[]
         niter = 0
-        with open(self.filename) as f:
-            words, tags = [], []
-            for line in f:
+        if self.file_format== FileFormat.CONLL:
+            for line in file_stream:
                 line = line.strip()
                 if (len(line) == 0 or line.startswith("-DOCSTART-")):
                     if len(words) != 0:
@@ -113,14 +128,40 @@ class CoNLLDataset(object):
                         tag = self.processing_tag(tag)
                     words += [word]
                     tags += [tag]
-                    
+                        
+                if len(words)>0:
+                    yield words,tags
+        elif self.file_format == FileFormat.TOKEN:
+            for line in file_stream:
+                niter +=1
+                pre_words = line.strip().split()
+                for w in pre_words:
+                    words+=[self.processing_word(w)]
+                if self.max_iter is not None and niter > self.max_iter:
+                    break
+                tags = ["O"]*len(words)
+                yield words,tags
+                words, tags = [], []
             if len(words)>0:
                 yield words,tags
-                
-
-    def __iter__(self):
-        if self.file_format== FileFormat.CONLL:
-            self.iter_conll()
+        elif self.file_format == FileFormat.TEXT:
+            from nltk.tokenize import sent_tokenize,word_tokenize
+            
+            for line in file_stream:
+                for sentence in sent_tokenize(line):
+                    niter +=1
+                    pre_words = word_tokenize(sentence)
+                    for w in pre_words:
+                        words+=[self.processing_word(w)]
+                    if self.max_iter is not None and niter > self.max_iter:
+                        break
+                    tags = ["O"]*len(words)
+                    yield words,tags
+                    words, tags = [], []
+                if len(words)>0:
+                    yield words,tags
+        else:
+            sys.stderr.write("Format not supported")
             
     def __len__(self):
         """Iterates once over the corpus to set and store length"""
@@ -358,28 +399,27 @@ def preprocessing_word(word,lowercase):
     return processed_word         
 
 
-def add_oov_words(dataset, config):
+def add_oov_words(datasets, config):
     oov_size = config.oov_size
     if oov_size ==0:
         return
-    for words, tags in dataset:
-         
-        for char,word in words:
-            pword = word.processed_word
-            if word.unknown ==Unknown.UNKNOWN:
-                if pword in config.vocab_words:
-                    word.unknown = Unknown.UNKNOWN_ADD
-                    word.identifier = config.vocab_words[pword]
+    for dataset in datasets:
+        for words, tags in dataset:
+            for char,word in words:
+                pword = word.processed_word
+                if word.unknown ==Unknown.UNKNOWN:
+                    if pword in config.vocab_words:
+                        word.unknown = Unknown.UNKNOWN_ADD
+                        word.identifier = config.vocab_words[pword]
+                        continue
                         
-                    continue
-                    
-                if oov_size > config.oov_current_size:
-                    config.vocab_words[pword]=len(config.vocab_words)   
-                    word.unknown = Unknown.UNKNOWN_ADD
-                    word.identifier = config.vocab_words[pword]
-                    config.oov_words.append(pword)
-                    config.oov_current_size+=1
-                    
+                    if oov_size > config.oov_current_size:
+                        config.vocab_words[pword]=len(config.vocab_words)   
+                        word.unknown = Unknown.UNKNOWN_ADD
+                        word.identifier = config.vocab_words[pword]
+                        config.oov_words.append(pword)
+                        config.oov_current_size+=1
+                        
                 
 
          

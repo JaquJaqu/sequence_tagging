@@ -31,6 +31,7 @@ Table of Content
  - [Train a New Model](#train-a-new-model)
  - [Transfer Learning](#transfer-learning)
  - [Predict Labels for New Text](#predict-labels-for-new-text)
+ - [Server for Predicting Labels for New Text](#server-for-predicting-labels-for-new-text)
  - [Parameters in the Configuration File](#parameters-in-the-configuration-file)
  - [Requirements](#requirements) 
  - [Citation](#citation)
@@ -278,11 +279,13 @@ python3 test.py model_germeval/config corpora/GermEval/NER-de-test.tsv.conv
 
 ## Transfer Learning
 
-For performing the transfer learning you first need to train a model e.g. based on the GermEval data as described [here](#train-a-new-model). Be aware, that you added the vocabulary and the tagsets when training the basic model. The easiest way is to add them as additional parameters, when building the vocabulary, e.g.:
+For performing the transfer learning you first need to train a model e.g. based on the GermEval data as described [here](#train-a-new-model). Be aware, that you added the vocabulary and the tagsets when training the basic model. If you want to perform transfer learning you might want to copy the directory as otherwise the further learning steps will replace the previous model. Take care to adjust the * dir_model_output* value within the configuration file. The easiest way is to add them as additional parameters, when building the vocabulary, e.g.:
 
 ```
 python3 build_data.py model_germeval/config transfer_training.conll transfer_dev.conll test_transfer.conll
 ```
+
+However, this step needs to be performed before training the model. If you have already trained a model you would need to re-train a model with the additional vocabulary. 
 
 Whereas there is not explicit parameter fitting to these words, in this way the embeddings will be available for the model. 
 
@@ -300,8 +303,61 @@ After the training, new text files in the domain of the transfer learning files 
 To test a model, the *test.py* script is used and expects, the configuration file of the model and the test file
 
 ``` 
-python3 test.py model_configuration test_set
+python3 test.py model_configuration test_file.conll
 ```
+
+The test script has further parameters in order to process several test files, different formats and write to output files directly. By calling the script with the *-h* argument, these will be shown:
+
+```
+python3 test.py -h
+
+usage: test.py [-h] [-i {SYSTEM,FILE}] [-o {SYSTEM,FILE}] [-of OUTPUT_FOLDER]
+               [-f {CONLL,TEXT,TOKEN}]
+               config_file [test_files [test_files ...]]
+
+positional arguments:
+  config_file
+  test_files
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -i {SYSTEM,FILE}, --input {SYSTEM,FILE}
+                        if FILE is selected the file has to be passed as
+                        additional parameter. If SYSTEM is selected the input
+                        will be read from the standard input stream.
+  -o {SYSTEM,FILE}, --output {SYSTEM,FILE}
+                        if FILE is selected an output folder needs to be
+                        specified (-of). If SYSTEM is selected, the standard
+                        output stream will be used for the output.
+  -of OUTPUT_FOLDER, --output_folder OUTPUT_FOLDER
+  -f {CONLL,TEXT,TOKEN}, --format {CONLL,TEXT,TOKEN}
+```
+
+It is possible to read input that should be tagged from the standard input stream (-i SYSTEM) or from files. Furthermore, the output can be either written to the standard output or to files. If no parameter is specified, it will be written to the standard output stream. Otherwise, it will be written to a file with the name of the test file. In order to prevent ot override existing files, we advise to create and specify an output folder with the parameter *-of*. 
+Currently, we support the files to be in the CoNLL format, in token format (words are tokenized and there is one sentence per line) or in plain text format (no tokenization). For the plain text format, nltk is required. It can be installed as follows:
+
+```
+pip3 install pip3
+python3
+import nltk
+nltk.download('punkt')
+exit()
+``` 
+
+## Server for Predicting Labels for New Text
+
+If you want to use the NER tool as a service you can start a web server that gives responses to the given queries. For this you can specify a port (e.g. *-p 10080*) and a model configuration, e.g.:
+
+```
+python3 test_server.py -p 10080 model_configuration
+```
+
+The server processes two arguments: *text* expects the document for which named entity labels should be predicted. With the optional argument *format*, the input format can be specified (CONLL, TEXT, TOKEN). Further information about these formats is given [here](#predict-labels-for-new-text). After the model is load, we can query using e.g.:
+
+```
+curl "localhost:10080?format=TEXT&text=Die%20Hauptstadt%20von%20Spanien%20ist%20Madrid."
+```
+
 
 ## Parameters in the Configuration File
 
