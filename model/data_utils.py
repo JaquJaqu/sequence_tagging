@@ -119,7 +119,6 @@ class CoNLLDataset(object):
                         words, tags = [], []
                 else:
                     ls = line.split()
-                    
                     word, tag = ls[0],ls[-1]
                     
                     if self.processing_word is not None:
@@ -129,8 +128,8 @@ class CoNLLDataset(object):
                     words += [word]
                     tags += [tag]
                         
-                if len(words)>0:
-                    yield words,tags
+            if len(words)>0:
+                yield words,tags
         elif self.file_format == FileFormat.TOKEN:
             for line in file_stream:
                 niter +=1
