@@ -334,7 +334,28 @@ optional arguments:
 ```
 
 It is possible to read input that should be tagged from the standard input stream (-i SYSTEM) or from files. Furthermore, the output can be either written to the standard output or to files. If no parameter is specified, it will be written to the standard output stream. Otherwise, it will be written to a file with the name of the test file. In order to prevent ot override existing files, we advise to create and specify an output folder with the parameter *-of*. 
-Currently, we support the files to be in the CoNLL format, in token format (words are tokenized and there is one sentence per line) or in plain text format (no tokenization). For the plain text format, nltk is required. It can be installed as follows:
+Currently, we support the files to be in the CoNLL format, in token format (words are tokenized and there is one sentence per line) or in plain text format (no tokenization), as described in the Table below:
+
+| Format | Example | Description|
+|--------|---------|------------|
+|        | In O   | As CONLL format  | 
+|        | Madrid B-LOC             | we expect the files |
+|        | befinden O            | to contain the token |
+| CONLL  | sich O           | in the first row.|
+|        | Hochschulen O              | All remaining |
+|        | , B-LOC       | columns will be|
+|        | Museen O | ignored. |
+|        | und O               |  |
+|        | Kultureinrichtungen O               |  |
+|        | . O               |  |
+|--------|-------------------|----------|
+| TOKEN  | In Madrid befinden sich Hochschulen , Museen und Kultureinrichtungen .| The text is tokenized by whitespaces|
+|--------|-------------------|----------|
+| TEXT  | In Madrid befinden sich Hochschulen, Museen und Kultureinrichtungen.| The text is not tokenized by whitespaces|
+|--------|-------------------|----------|
+
+
+For the plain text format, nltk is required. It can be installed as follows:
 
 ```
 pip3 install pip3
