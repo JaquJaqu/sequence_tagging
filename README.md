@@ -341,7 +341,6 @@ Currently, we support the files to be in the CoNLL format, in token format (word
 | CONLL  | In O <br>Madrid B-LOC<br>befinden O<br> sich O<br> Hochschulen O<br>, O<br>Museen O<br>und O<br>Kultureinrichtungen O<br>. O | As CONLL format<br>we expect the files<br>to contain the token<br>in the first column.<br>All remaining columns will <br>be ignored.|
 | TOKEN  | In Madrid befinden sich Hochschulen , Museen und Kultureinrichtungen .| The text is tokenized by whitespaces|
 | TEXT  | In Madrid befinden sich Hochschulen, Museen und Kultureinrichtungen.| The text is not tokenized by whitespaces|
-|--------|-------------------|----------|
 
 
 For the plain text format, nltk is required. It can be installed as follows:
@@ -362,7 +361,15 @@ If you want to use the NER tool as a service you can start a web server that giv
 python3 test_server.py -p 10080 model_configuration
 ```
 
-The server processes two arguments: *text* expects the document for which named entity labels should be predicted. With the optional argument *format*, the input format can be specified (CONLL, TEXT, TOKEN). Further information about these formats is given [here](#predict-labels-for-new-text). After the model is load, we can query using e.g.:
+The server processes two arguments: *text* expects the document for which named entity labels should be predicted. With the optional argument *format*, the input format can be specified (CONLL, TEXT, TOKEN). Further information about these formats is given [here](#predict-labels-for-new-text). We will show examples for each of the formats in the table below for the sentence: *Die Hauptstadt von Spanien ist Madrid*
+
+
+| Format | Example |
+|--------|---------|
+| CONLL  | curl "localhost:10080?format=CONLL&text=Die%20O%0AHauptstadt%20O%0Avon%20O%0ASpanien%20O%0Aist%20O%0AMadrid%20O%0A.%20O%0A" |
+| TOKEN | curl "localhost:10080?format=TOKEN&text=Die%20Hauptstadt%20von%20Spanien%20ist%20Madrid%20." |
+| TeXT | curl "localhost:10080?format=TEXT&text=Die%20Hauptstadt%20von%20Spanien%20ist%20Madrid." |
+
 
 ```
 curl "localhost:10080?format=TEXT&text=Die%20Hauptstadt%20von%20Spanien%20ist%20Madrid."
