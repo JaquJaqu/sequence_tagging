@@ -339,9 +339,7 @@ Currently, we support the files to be in the CoNLL format, in token format (word
 | Format | Example | Description|
 |--------|---------|------------|
 | CONLL  | In O <br>Madrid B-LOC<br>befinden O<br> sich O<br> Hochschulen O<br>, O<br>Museen O<br>und O<br>Kultureinrichtungen O<br>. O | As CONLL format<br>we expect the files<br>to contain the token<br>in the first column.<br>All remaining columns will <br>be ignored.|
-|--------|-------------------|----------|
 | TOKEN  | In Madrid befinden sich Hochschulen , Museen und Kultureinrichtungen .| The text is tokenized by whitespaces|
-|--------|-------------------|----------|
 | TEXT  | In Madrid befinden sich Hochschulen, Museen und Kultureinrichtungen.| The text is not tokenized by whitespaces|
 |--------|-------------------|----------|
 
