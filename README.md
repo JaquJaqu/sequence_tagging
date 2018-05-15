@@ -181,6 +181,7 @@ Following download options are possible:
 all            download all models and embeddings
 all_models     download all models
 all_embed      download all embeddings
+eval           download CoNLL 2003 evaluation script
 GermEval       download best model and embeddings for GermEval
 CONLL2003      download best model and embeddings for CoNLL 2003
 ONB            download best model and embeddings for ONB

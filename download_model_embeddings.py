@@ -30,6 +30,7 @@ def print_options():
     print ("all".ljust(pad)+"download all models and embeddings")
     print ("all_models".ljust(pad)+"download all models")
     print ("all_embed".ljust(pad)+"download all embeddings")
+    print ("eval".ljust(pad)+"download CoNLL 2003 evaluation script")
 
     for t in types:
         print (t.ljust(pad)+"download best model and embeddings for "+t)
@@ -92,6 +93,10 @@ def downloadEmbeddings():
         download(e,p,embeddings_folder,dest_embeddings_folder)
         download(e,f,embeddings_folder,dest_embeddings_folder)
 
+def downloadEval():
+    print("Download Evaluation script")
+    download("conlleval","https://www.clips.uantwerpen.be/conll2003/ner/bin/conlleval","","./")
+
 if type =="all_embed":
     downloadEmbeddings()
     sys.exit(0)    
@@ -101,6 +106,10 @@ if type =="all_models":
 if type =="all":
     downloadModels()
     downloadEmbeddings()
+    downloadEval()
+    sys.exit(0)
+if type =="eval":
+    downloadEval()
     sys.exit(0)
         
 if not type in types:
