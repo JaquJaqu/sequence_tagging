@@ -368,12 +368,9 @@ The server processes two arguments: *text* expects the document for which named 
 |--------|---------|
 | CONLL  | curl "localhost:10080?format=CONLL&text=Die%20O%0AHauptstadt%20O%0Avon%20O%0ASpanien%20O%0Aist%20O%0AMadrid%20O%0A.%20O%0A" |
 | TOKEN | curl "localhost:10080?format=TOKEN&text=Die%20Hauptstadt%20von%20Spanien%20ist%20Madrid%20." |
-| TeXT | curl "localhost:10080?format=TEXT&text=Die%20Hauptstadt%20von%20Spanien%20ist%20Madrid." |
+| TEXT | curl "localhost:10080?format=TEXT&text=Die%20Hauptstadt%20von%20Spanien%20ist%20Madrid." |
 
 
-```
-curl "localhost:10080?format=TEXT&text=Die%20Hauptstadt%20von%20Spanien%20ist%20Madrid."
-```
 
 
 ## Parameters in the Configuration File
