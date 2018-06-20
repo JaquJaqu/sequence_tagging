@@ -144,6 +144,7 @@ We provide the best performing model for the following datasets:
 | GermEval 2014 | German | NER dataset based on Wikipedia | [link](https://sites.google.com/site/germeval2014ner/)|
 | ONB| German |NER dataset based on texts of the Austrian National Library from 1710 and 1873 |[link](http://github.com/KBNLresearch/europeananp-ner/)|
 | LFT | German | NER dataset based on text of the Dr Friedrich Teßmann Library from 1926 | [link](http://github.com/KBNLresearch/europeananp-ner/)|
+| ICAB-NER09| Italian | NER dataset for Italian | [link](http://ontotext.fbk.eu/icab.html) |
 
 All provided models are trained using transfer learning techniques. The models and the embeddings can be downloaded [manually](#manual-download) or [automatically](#automatic-download).
 
@@ -158,6 +159,7 @@ The models can be downloaded as described in the table. The models should be sto
 | CoNLL 2003 (German) | GermEval 2014 | CoNLL 2003 | German Wikipedia|[link](http://www2.ims.uni-stuttgart.de/data/ner_de/models/model_transfer_learning_conll2003_germeval_emb_wiki.tar.gz) |
 | ONB | GermEval 2014 | ONB | German Europeana |  [link](http://www2.ims.uni-stuttgart.de/data/ner_de/models/model_transfer_learning_germeval_onb_emb_euro.tar.gz) |
 | LFT | GermEval 2014 | LFT | German Wikipedia | [link](http://www2.ims.uni-stuttgart.de/data/ner_de/models/model_transfer_learning_germeval_lft_emb_wiki.tar.gz) |
+|ICAB-NER09 | ICAB-NER09 | | [link](http://www2.ims.uni-stuttgart.de/data/ner_de/models/model_ner_wiki_it.tar.gz) |
 
 The embeddings should best be stored in the folder *embeddings* inside the project folder.
 We provide the full embeddings (named Complete) and the filtered embeddings, which only contain the vocabulary of the data of the task. These filtered models have also been used to train the pre-computed models. The German Wikipedia model is provided by [Facebook Research](http://github.com/facebookresearch/fastText/blob/master/pretrained-vectors.md).
@@ -166,6 +168,7 @@ We provide the full embeddings (named Complete) and the filtered embeddings, whi
 |------|-------------|------------|-----------|---------|
 | Wiki | German Wikipedia | 300   | [link](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.de.zip)  |  [link](http://www2.ims.uni-stuttgart.de/data/ner_de//embeddings/fasttext.wiki.de.bin.trimmed.npz)|
 | Euro | German Europeana | 300   |  [link](http://www2.ims.uni-stuttgart.de/data/ner_de//embeddings/fasttext.german.europeana.skip.300.bin) | [link](http://www2.ims.uni-stuttgart.de/data/ner_de//embeddings/fasttext.german.europeana.skip.300.bin.trimmed.npz) |
+| Wiki | Italian Wikipedia | 300   | [link](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.it.zip)  |  [link](http://www2.ims.uni-stuttgart.de/data/ner_de//embeddings/fasttext.wiki.it.bin.trimmed.npz)|
 
 ### Automatic Download
 
@@ -178,14 +181,15 @@ No download option has been specified:
 python download_model_embeddings.py options
 
 Following download options are possible:
-all            download all models and embeddings
-all_models     download all models
-all_embed      download all embeddings
-eval           download CoNLL 2003 evaluation script
-GermEval       download best model and embeddings for GermEval
-CONLL2003      download best model and embeddings for CoNLL 2003
-ONB            download best model and embeddings for ONB
-LFT            download best model and embeddings for LFT
+all                 download all models and embeddings
+all_models          download all models
+all_embed           download all embeddings
+eval                download CoNLL 2003 evaluation script
+GermEval            download best model and embeddings for GermEval
+CONLL2003           download best model and embeddings for CONLL2003
+ONB                 download best model and embeddings for ONB
+LFT                 download best model and embeddings for LFT
+ICAB-NER09-Italian  download best model and embeddings for ICAB-NER09-Italian
 
 ```
 
