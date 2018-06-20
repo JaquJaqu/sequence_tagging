@@ -15,16 +15,18 @@ types["GermEval"]=["Wiki","model_transfer_learning_conll2003_germeval_emb_wiki.t
 types["CONLL2003"]=["Wiki","model_transfer_learning_germeval_conll2003_emb_wiki.tar.gz"]
 types["ONB"]=["Europeana","model_transfer_learning_germeval_onb_emb_euro.tar.gz"]
 types["LFT"]=["Wiki","model_transfer_learning_germeval_lft_emb_wiki.tar.gz"]
+types["ICAB-NER09-Italian"]=["Wiki_it","model_ner_wiki_it.tar.gz"]
 
 
 
 embeddings={}
 embeddings["Wiki"]=["fasttext.wiki.de.bin.trimmed.npz","https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.de.zip"]
+embeddings["Wiki_it"]=["fasttext.wiki.it.bin.trimmed.npz","https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.it.zip"]
 embeddings["Europeana"] =["fasttext.german.europeana.skip.300.bin.trimmed.npz","fasttext.german.europeana.skip.300.bin"]
 
 
 def print_options():
-    pad = 15
+    pad = 20
     print ("python %s options"%(sys.argv[0]))
     print ("\nFollowing download options are possible:")
     print ("all".ljust(pad)+"download all models and embeddings")
