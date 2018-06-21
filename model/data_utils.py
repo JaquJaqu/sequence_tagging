@@ -145,9 +145,11 @@ class CoNLLDataset(object):
                 yield words,tags
         elif self.file_format == FileFormat.TEXT:
             from nltk.tokenize import sent_tokenize,word_tokenize
-            
+            lines = ""
             for line in file_stream:
-                for sentence in sent_tokenize(line):
+                lines +=" " +line
+            lines = lines.strip()
+            for sentence in sent_tokenize(lines):
                     niter +=1
                     pre_words = word_tokenize(sentence)
                     for w in pre_words:
@@ -157,7 +159,7 @@ class CoNLLDataset(object):
                     tags = ["O"]*len(words)
                     yield words,tags
                     words, tags = [], []
-                if len(words)>0:
+            if len(words)>0:
                     yield words,tags
         else:
             sys.stderr.write("Format not supported")
