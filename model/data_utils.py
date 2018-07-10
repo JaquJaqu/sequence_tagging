@@ -227,7 +227,7 @@ def get_vocab(filename):
     """
     print("Building vocab...")
     vocab = set()
-    with open(filename) as f:
+    with open(filename, encoding = "utf8") as f:
         for line in f:
             word = line.strip().split(' ')[0]
             vocab.add(word)
@@ -271,7 +271,7 @@ def load_vocab(filename):
     try:
         d = dict()
         idx = 0
-        with open(filename) as f:
+        with open(filename, encoding = "utf8") as f:
             for word in f:
                 word = word.strip()
                 if word in d:
@@ -288,7 +288,7 @@ def load_vocab(filename):
 
 def load_vocab_rev(filename):
     d = {}
-    with open(filename) as f:
+    with open(filename, encoding = "utf8") as f:
         for idx, word in enumerate(f):
             word = word.strip()
             d[idx] = word
