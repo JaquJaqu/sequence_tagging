@@ -138,6 +138,8 @@ The first column is the input word, the second column specifies the pre-processe
 ## Download Models and Embeddings
 We provide the best performing model for the following datasets:
 
+### Datasets
+
 | Name| Language | Description| Webpage| 
 |-----|----------|------------|---------|
 | CoNLL 2003 | German | NER dataset based on Newspaper | [link](https://www.clips.uantwerpen.be/conll2003/ner/)
@@ -149,7 +151,7 @@ We provide the best performing model for the following datasets:
 All provided models are trained using transfer learning techniques. The models and the embeddings can be downloaded [manually](#manual-download) or [automatically](#automatic-download).
 
 
-### Manual Download
+### Manual Download of Models
 
 The models can be downloaded as described in the table. The models should be stored directly on the project directory. Furthermore, they need to be uncompressed (tar xfvz \*tar.gz)
 
@@ -170,7 +172,7 @@ We provide the full embeddings (named Complete) and the filtered embeddings, whi
 | Euro | German Europeana | 300   |  [link](http://www2.ims.uni-stuttgart.de/data/ner_de//embeddings/fasttext.german.europeana.skip.300.bin) | [link](http://www2.ims.uni-stuttgart.de/data/ner_de//embeddings/fasttext.german.europeana.skip.300.bin.trimmed.npz) |
 | Wiki | Italian Wikipedia | 300   | [link](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.it.zip)  |  [link](http://www2.ims.uni-stuttgart.de/data/ner_de//embeddings/fasttext.wiki.it.bin.trimmed.npz)|
 
-### Automatic Download
+### Automatic Download of Models
 
 Using the python script *download_model_embeddings.py* the models and the embeddings can be donwloaded automatically. In addition, the files are placed at the recommended location and are uncompressed.  You can choose between the several options:
 
