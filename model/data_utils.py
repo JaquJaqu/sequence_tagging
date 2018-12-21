@@ -330,7 +330,7 @@ def export_trimmed_embedding_vectors(vocab, glove_filename, trimmed_filename, di
     """
     embeddings = np.zeros([len(vocab), dim])
     if embedding_type.lower()=="glove":
-        with open(glove_filename) as f:
+        with open(glove_filename,encoding = "utf-8") as f:
             for line in f:
                 line = line.strip().split(' ')
                 word = line[0]
@@ -338,6 +338,18 @@ def export_trimmed_embedding_vectors(vocab, glove_filename, trimmed_filename, di
                 if word in vocab:
                     word_idx = vocab[word]
                     embeddings[word_idx] = np.asarray(embedding)
+    elif embedding_type.lower()=="w2v":
+        i = 0
+        for l in open(glove_filename):
+            i+=1
+            if i==1:
+                continue
+            line = line.strip().split(' ')
+            word = line[0]
+            embedding = [float(x) for x in line[1:]]
+            if word in vocab:
+               word_idx = vocab[word]
+               embeddings[word_idx] = np.asarray(embedding)             
     elif embedding_type.lower()=="fasttext":
         model = fastText.load_model(glove_filename)
         for w in vocab:
