@@ -235,8 +235,8 @@ At least, all parameters that have as value *TODO* need to be adjusted. Using th
 
 ```
 [PATH]
-#path where the model will be written to
-dir_model_output = model_germeval
+#path where the model will be written to, $PWD refers to the directory where the configuration file is located
+dir_model_output = $PWD
 
 ...
 filename_train = corpora/GermEval/NER-de-train.tsv.conv 
@@ -252,7 +252,7 @@ dim_char = 100
 # path to the embeddings that are used
 filename_embeddings = ./embeddings/wiki.de.bin
 # path where the embeddings defined by train/dev/test are written to
-filename_embeddings_trimmed = ./embeddings/wiki.de.bin.trimmed.npz
+filename_embeddings_trimmed = ${PATH:dir_model_output}/wiki.de.bin.trimmed.npz
 ...
 
 ```
@@ -387,10 +387,10 @@ The configuration file is divided in three sections. The section *PATH* contains
 ```
 [PATH]
 #path where the model will be written to
-dir_model_output = TODO
-dir_vocab_output = %(dir_model_output)s
-dir_model = %(dir_model_output)s/model.weights/
-path_log = %(dir_model_output)s/test.log
+dir_model_output = $PWD
+dir_vocab_output = ${dir_model_output}
+dir_model = ${dir_model_output}/model.weights/
+path_log = ${dir_model_output}/test.log
 
 
 filename_train = TODO
@@ -399,9 +399,10 @@ filename_test =  TODO
 
 # these are the output paths for the vocabulary, the 
 # tagsets and the characters used in the train/dev/test set
-filename_words = %(dir_vocab_output)s/words.txt
-filename_tags = %(dir_vocab_output)s/tags.txt
-filename_chars = %(dir_vocab_output)s/chars.txt
+filename_words = ${dir_vocab_output}/words.txt
+filename_tags = ${dir_vocab_output}/tags.txt
+filename_chars = ${dir_vocab_output}/chars.txt
+
 
 [EMBEDDINGS]
 # dimension of the words
@@ -411,7 +412,7 @@ dim_char = 100
 # path to the embeddings that are used 
 filename_embeddings = TODO
 # path where the embeddings defined by train/dev/test are written to
-filename_embeddings_trimmed = TODO 
+filename_embeddings_trimmed =  ${PATH:dir_model_output}/embeddings.npz 
 # models can also be trained with random embeddings that are 
 # adjusted during training
 use_pretrained = True
