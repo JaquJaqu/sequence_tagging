@@ -9,6 +9,30 @@ import configparser
 
 from enum import Enum
 
+class EnvInterpolation(configparser.BasicInterpolation):
+    """Interpolation which expands environment variables in values."""
+    def before_get(self, parser, section, option, value, defaults):
+        print("----------")
+        print( value)
+        print(option)
+        print(defaults)
+        return os.path.expandvars(value)
+
+#        if value=="$PWD":
+            
+#            print(os.path.expandvars(value))
+#            defaults[option]=os.path.expandvars(value)
+#            return os.path.expandvars(value)
+#        else:
+#            L = []
+#            self._interpolate_some(parser, option, L, value, section, defaults, 1)
+#            return ''.join(L)
+        #    return value
+#        else:
+            #newvalue = super(EnvInterpolation,self).before_get(parser,section,option,value,defaults)
+            #print(newvalue)
+            #return newvalue
+
 
     
 
@@ -37,13 +61,21 @@ class Config():
             self.load()
     
     def setParameters(self,configfile):
-        param = configparser.SafeConfigParser()
-        param.read(configfile)
+        param = configparser.SafeConfigParser(interpolation = configparser.ExtendedInterpolation())
+        #param = configparser.SafeConfigParser(os.environ)#interpolation = EnvInterpolation())
+#        param = configparser.SafeConfigParser(interpolation = )
+        configfile_str = open(configfile).read()
+        #configfile_str = os.path.expandvars(configfile_str)
+        configfile_str = configfile_str.replace("$PWD",os.path.abspath(os.path.dirname(configfile)))
+        param.read_string(configfile_str)
+        print(param)
         self.dir_model_output=param.get('PATH','dir_model_output')
         self.dir_vocab_output=param.get('PATH','dir_vocab_output')
         self.dir_model=param.get('PATH','dir_model')
         self.path_log=param.get('PATH','path_log')
         
+
+
         self.filename_train=param.get("PATH",'filename_train')
         self.filename_test=param.get('PATH','filename_test')
         self.filename_dev=param.get('PATH','filename_dev')
