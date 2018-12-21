@@ -6,9 +6,9 @@ dir_model = ${dir_model_output}/model.weights/
 path_log = ${dir_model_output}/test.log
 
 
-filename_train = /projekte/ocex/martin/NER/corpora/GermaNER-train.conll
-filename_dev = /projekte/ocex/martin/NER/corpora/GermaNER-dev.conll 
-filename_test = /projekte/ocex/martin/NER/corpora/GermaNER-test.conll
+filename_train = TODO
+filename_dev = TODO 
+filename_test = TODO
 
 
 # these are the output paths for the vocabulary, the 
@@ -23,7 +23,7 @@ dim_word = 300
 # dimension of the characters
 dim_char = 100
 # path to the embeddings that are used 
-filename_embeddings = /mount/arbeitsdaten/ocex/sequence_tagging_multilang/muse_embeddings/wiki.multi.de.vec
+filename_embeddings = TODO
 # path where the embeddings defined by train/dev/test are written to
 filename_embeddings_trimmed =  ${PATH:dir_model_output}/embeddings.npz
 # models can also be trained with random embeddings that are 
