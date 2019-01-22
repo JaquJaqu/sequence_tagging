@@ -79,7 +79,7 @@ git clone https://github.com/facebookresearch/fastText.git
 cd fastText
 pip3 install .
 ```
-
+Windows user might face [problems](https://github.com/salestock/fastText.py/issues/91) installing the fastText package. One of the solutions seems to be to install the "[Visual C++ 2015 Build Tools](https://www.microsoft.com/en-us/download/details.aspx?id=48159)".
 
 
 ## Run an Existing Model
