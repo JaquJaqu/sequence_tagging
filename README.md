@@ -161,7 +161,7 @@ The models can be downloaded as described in the table. The models should be sto
 | CoNLL 2003 (German) | GermEval 2014 | CoNLL 2003 | German Wikipedia|[link](http://www2.ims.uni-stuttgart.de/data/ner_de/models/model_transfer_learning_conll2003_germeval_emb_wiki.tar.gz) |
 | ONB | GermEval 2014 | ONB | German Europeana |  [link](http://www2.ims.uni-stuttgart.de/data/ner_de/models/model_transfer_learning_germeval_onb_emb_euro.tar.gz) |
 | LFT | GermEval 2014 | LFT | German Wikipedia | [link](http://www2.ims.uni-stuttgart.de/data/ner_de/models/model_transfer_learning_germeval_lft_emb_wiki.tar.gz) |
-|ICAB-NER09 | ICAB-NER09 | | [link](http://www2.ims.uni-stuttgart.de/data/ner_de/models/model_ner_wiki_it.tar.gz) |
+|ICAB-NER09 | ICAB-NER09 | none | Italian Wikipedia | [link](http://www2.ims.uni-stuttgart.de/data/ner_de/models/model_ner_wiki_it.tar.gz) |
 
 The embeddings should best be stored in the folder *embeddings* inside the project folder.
 We provide the full embeddings (named Complete) and the filtered embeddings, which only contain the vocabulary of the data of the task. These filtered models have also been used to train the pre-computed models. The German Wikipedia model is provided by [Facebook Research](http://github.com/facebookresearch/fastText/blob/master/pretrained-vectors.md).
