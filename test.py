@@ -58,9 +58,16 @@ config = Config(config_file)
 # build model
 conll_test_files = []
 for f in test_filenames:
-    test  = CoNLLDataset(f, config.processing_word,None, config.max_iter, 
+    if os.path.isdir(f):
+        for fi in os.listdir(f):
+            fn = os.path.join(f,fi)
+            test  = CoNLLDataset(fn, config.processing_word,None, config.max_iter, 
                          stream=input_format,file_format=file_format)
-    conll_test_files.append(test)
+            conll_test_files.append(test)
+    else:
+        test  = CoNLLDataset(f, config.processing_word,None, config.max_iter, 
+                         stream=input_format,file_format=file_format)
+        conll_test_files.append(test)
 #add OOV words to the model
 add_oov_words(conll_test_files,config)
 
