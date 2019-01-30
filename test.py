@@ -55,19 +55,22 @@ test_filenames = args.test_files
     
 config = Config(config_file)
 
-# build model
-conll_test_files = []
+#check if some test file is directory and add files from the directory
+new_test_filenames = []
 for f in test_filenames:
     if os.path.isdir(f):
         for fi in os.listdir(f):
-            fn = os.path.join(f,fi)
-            test  = CoNLLDataset(fn, config.processing_word,None, config.max_iter, 
-                         stream=input_format,file_format=file_format)
-            conll_test_files.append(test)
+            new_test_filenames.append(os.path.join(f,fi))
     else:
-        test  = CoNLLDataset(f, config.processing_word,None, config.max_iter, 
+        new_test_filenames.append(f)
+test_filenames=new_test_filenames
+
+# build model
+conll_test_files = []
+for f in test_filenames:
+    test  = CoNLLDataset(f, config.processing_word,None, config.max_iter, 
                          stream=input_format,file_format=file_format)
-        conll_test_files.append(test)
+    conll_test_files.append(test)
 #add OOV words to the model
 add_oov_words(conll_test_files,config)
 
