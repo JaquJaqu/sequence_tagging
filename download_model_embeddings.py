@@ -16,12 +16,14 @@ types["CONLL2003"]=["Wiki","model_transfer_learning_germeval_conll2003_emb_wiki.
 types["ONB"]=["Europeana","model_transfer_learning_germeval_onb_emb_euro.tar.gz"]
 types["LFT"]=["Wiki","model_transfer_learning_germeval_lft_emb_wiki.tar.gz"]
 types["ICAB-NER09-Italian"]=["Wiki_it","model_ner_wiki_it.tar.gz"]
+types["CONLL2002-NL"]=["Wiki_nl","model_ner_conll2002_nl.tar.gz"]
 
 
 
 embeddings={}
 embeddings["Wiki"]=["fasttext.wiki.de.bin.trimmed.npz","https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.de.zip"]
 embeddings["Wiki_it"]=["fasttext.wiki.it.bin.trimmed.npz","https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.it.zip"]
+embeddings["Wiki_nl"]=["fasttext.wiki.nl.bin.trimmed.npz","https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.nl.zip"]
 embeddings["Europeana"] =["fasttext.german.europeana.skip.300.bin.trimmed.npz","fasttext.german.europeana.skip.300.bin"]
 
 
