@@ -147,6 +147,7 @@ We provide the best performing model for the following datasets:
 | ONB| German |NER dataset based on texts of the Austrian National Library from 1710 and 1873 |[link](http://github.com/KBNLresearch/europeananp-ner/)|
 | LFT | German | NER dataset based on text of the Dr Friedrich Teßmann Library from 1926 | [link](http://github.com/KBNLresearch/europeananp-ner/)|
 | ICAB-NER09| Italian | NER dataset for Italian | [link](http://ontotext.fbk.eu/icab.html) |
+| CONLL-2002 NL | Dutch | NER for Dutch | [link](https://www.clips.uantwerpen.be/conll2002/) |
 
 All provided models are trained using transfer learning techniques. The models and the embeddings can be downloaded [manually](#manual-download) or [automatically](#automatic-download).
 
