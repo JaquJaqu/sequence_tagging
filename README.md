@@ -163,6 +163,7 @@ The models can be downloaded as described in the table. The models should be sto
 | ONB | GermEval 2014 | ONB | German Europeana |  [link](http://www2.ims.uni-stuttgart.de/data/ner_de/models/model_transfer_learning_germeval_onb_emb_euro.tar.gz) |
 | LFT | GermEval 2014 | LFT | German Wikipedia | [link](http://www2.ims.uni-stuttgart.de/data/ner_de/models/model_transfer_learning_germeval_lft_emb_wiki.tar.gz) |
 |ICAB-NER09 | ICAB-NER09 | none | Italian Wikipedia | [link](http://www2.ims.uni-stuttgart.de/data/ner_de/models/model_ner_wiki_it.tar.gz) |
+|CONLL2002-NL | CONLL2002-NL | none | Dutch newspaper | [link](http://www2.ims.uni-stuttgart.de/data/ner_de/models/model_ner_conll2002_nl.tar.gz) 
 
 The embeddings should best be stored in the folder *embeddings* inside the project folder.
 We provide the full embeddings (named Complete) and the filtered embeddings, which only contain the vocabulary of the data of the task. These filtered models have also been used to train the pre-computed models. The German Wikipedia model is provided by [Facebook Research](http://github.com/facebookresearch/fastText/blob/master/pretrained-vectors.md).
@@ -172,6 +173,7 @@ We provide the full embeddings (named Complete) and the filtered embeddings, whi
 | Wiki | German Wikipedia | 300   | [link](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.de.zip)  |  [link](http://www2.ims.uni-stuttgart.de/data/ner_de//embeddings/fasttext.wiki.de.bin.trimmed.npz)|
 | Euro | German Europeana | 300   |  [link](http://www2.ims.uni-stuttgart.de/data/ner_de//embeddings/fasttext.german.europeana.skip.300.bin) | [link](http://www2.ims.uni-stuttgart.de/data/ner_de//embeddings/fasttext.german.europeana.skip.300.bin.trimmed.npz) |
 | Wiki | Italian Wikipedia | 300   | [link](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.it.zip)  |  [link](http://www2.ims.uni-stuttgart.de/data/ner_de//embeddings/fasttext.wiki.it.bin.trimmed.npz)|
+| Wiki | Dutch Wikipedia | 300   | [link](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.nl.zip)  |  [link](http://www2.ims.uni-stuttgart.de/data/ner_de//embeddings/fasttext.wiki.nl.bin.trimmed.npz)|
 
 ### Automatic Download of Models
 
@@ -193,6 +195,8 @@ CONLL2003           download best model and embeddings for CONLL2003
 ONB                 download best model and embeddings for ONB
 LFT                 download best model and embeddings for LFT
 ICAB-NER09-Italian  download best model and embeddings for ICAB-NER09-Italian
+CONLL2002-NL        download best model and embeddings for ICAB-NER09-Italian
+
 
 ```
 
